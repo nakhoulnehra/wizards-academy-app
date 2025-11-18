@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import "./styles/globals.css";
 import "./styles/layout.css";
 import "./styles/home.css";
+import "./styles/auth.css"; 
 
 function App() {
   const [message, setMessage] = useState("Loading...");
