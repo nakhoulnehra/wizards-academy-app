@@ -23,10 +23,10 @@ function Navbar() {
           </div>
         </div>
 
-        {/* CENTER NAV LINKS (unchanged) */}
+        {/* CENTER NAV LINKS */}
         <nav className="navbar__nav">
           <a href="#programs">Programs</a>
-          <a href="#teams">Teams</a>
+          <Link to="/programs">All Programs</Link>
           <a href="#tournaments">Tournaments</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
