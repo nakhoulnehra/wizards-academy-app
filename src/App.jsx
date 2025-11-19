@@ -5,6 +5,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import AllProgramsPage from "./pages/AllProgramsPage";
+
+// STORE
+import useAuthStore from "./store/authStore";
 
 // GLOBAL STYLES
 import "./styles/globals.css";
@@ -14,16 +18,15 @@ import "./styles/auth.css";
 
 function App() {
   const [message, setMessage] = useState("Loading...");
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/`)
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => {
-        console.error("Error connecting to backend:", err);
-        setMessage("Error connecting to backend 😢");
-      });
-  }, []);
+    // Initialize auth from localStorage
+    initializeAuth();
+
+    // Backend connection check removed - root endpoint doesn't exist
+    // The backend only has /auth, /programs, and /academies routes
+  }, [initializeAuth]);
 
   return (
     <Router>
@@ -31,6 +34,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/programs" element={<AllProgramsPage />} />
       </Routes>
 
       {/* 

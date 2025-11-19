@@ -1,6 +1,18 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function ServicesSection({ services = [] }) {
+  const navigate = useNavigate();
+
+  const handleLearnMore = (service) => {
+    if (service.key === "academy") {
+      navigate("/programs?type=Academy");
+    } else {
+      // TODO: Handle other service types when their pages are created
+      console.log("Navigate to:", service.slug);
+    }
+  };
+
   return (
     <section id="services" className="section section--services">
       <div className="container">
@@ -30,7 +42,10 @@ function ServicesSection({ services = [] }) {
 
               <p className="services-card__text">{service.shortDescription}</p>
 
-              <button className="services-card__cta">
+              <button
+                className="services-card__cta"
+                onClick={() => handleLearnMore(service)}
+              >
                 Learn more <span>→</span>
               </button>
             </article>

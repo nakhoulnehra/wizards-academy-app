@@ -365,6 +365,14 @@
   margin-top: 1.8rem;
 }
 
+.featured-programs__cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+}
+
 .program-card {
   display: flex;
   flex-direction: column;
