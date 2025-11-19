@@ -2,29 +2,49 @@
   padding-top: 0.5rem;
 }
 
+/* OPTIONAL GENERIC SECTION STYLES (used by sections like services, programs, featured) */
+
+.section {
+  padding: 3rem 0;
+}
+
+.section-header {
+  text-align: left;
+  margin-bottom: 2.25rem;
+}
+
+.section-header__eyebrow {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.section-header__title {
+  font-size: 1.6rem;
+  margin: 0 0 0.6rem;
+}
+
+.section-header__subtitle {
+  font-size: 0.95rem;
+  max-width: 540px;
+  color: var(--color-text-muted);
+}
+
 /* HERO */
 
 .hero {
   position: relative;
   padding: 3.8rem 0 4.5rem;
   overflow: hidden;
+  background: transparent; /* let global background & aurora show */
 }
 
 .hero__overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-      circle at top left,
-      rgba(168, 85, 255, 0.35),
-      transparent 55%
-    ),
-    radial-gradient(
-      circle at top right,
-      rgba(56, 189, 248, 0.25),
-      transparent 55%
-    ),
-    radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), #020617 100%);
-  opacity: 0.9;
+  background: none; /* no local gradients – global aurora handles it */
   pointer-events: none;
 }
 
@@ -181,12 +201,13 @@
     font-size: 0.8rem;
   }
 }
+
 /* PROGRAM FILTER SECTION */
 
 .section--programs {
   padding-top: 3rem;
   padding-bottom: 3.5rem;
-  background: radial-gradient(circle at top, #020617 0, #020617 60%);
+  background: transparent; /* let aurora show */
 }
 
 .program-filter {
@@ -271,11 +292,12 @@
     grid-template-columns: 1fr;
   }
 }
+
 /* HIGHLIGHTS STRIP */
 
 .highlights {
   padding: 2.5rem 0;
-  background: radial-gradient(circle at top, #020617 0, #020617 60%);
+  background: transparent; /* let aurora show */
 }
 
 .highlights__inner {
@@ -327,12 +349,13 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
 /* FEATURED PROGRAMS */
 
 .section--featured-programs {
   padding-top: 3.2rem;
   padding-bottom: 3.5rem;
-  background: radial-gradient(circle at top, #020617 0, #020617 55%);
+  background: transparent; /* let aurora show */
 }
 
 .featured-programs__grid {
@@ -435,4 +458,14 @@
   .featured-programs__grid {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* SERVICES SECTION */
+
+.section--services {
+  background: transparent; /* same global background as hero */
+  border-top: none;
+  margin-top: 0;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
 }
