@@ -118,15 +118,16 @@
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, #a855ff, #f97316);
-  color: #ffffff;
-  box-shadow: 0 10px 25px rgba(248, 250, 252, 0.05),
-    0 0 35px rgba(168, 85, 255, 0.6);
+  background: #ffffff;            
+  color: #000000;                 
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 6px 14px rgba(255, 255, 255, 0.04); 
 }
 
 .btn--primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55), 0 0 40px rgba(168, 85, 255, 0.85);
+  background: #f3f4f6;            
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
 }
 
 .btn--outline {
