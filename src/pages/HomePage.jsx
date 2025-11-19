@@ -63,9 +63,7 @@ function HomePage() {
 
               <div className="hero__actions">
                 <button className="btn btn--primary">Explore programs</button>
-                <button className="btn btn--outline">
-                  Log in / Create account
-                </button>
+                <a href="/login" className="btn btn--outline">Log in / Create account</a>
               </div>
 
               <div className="hero__meta">
