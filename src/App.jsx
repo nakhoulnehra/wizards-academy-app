@@ -33,11 +33,13 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
 
-      {/* backend debug badge stays */}
-      <div className="backend-status">
-        <span className="backend-status__label">Backend:</span>
-        <span className="backend-status__message">{message}</span>
-      </div>
+      {/* 
+        <div className="backend-status">
+          <span className="backend-status__label">Backend:</span>
+          <span className="backend-status__message">{message}</span>
+        </div>
+      */}
+
     </Router>
   );
 }
