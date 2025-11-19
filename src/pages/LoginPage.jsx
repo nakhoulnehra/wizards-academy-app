@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,7 +36,8 @@ function LoginPage() {
               <p className="auth-card__eyebrow">Welcome back</p>
               <h1 className="auth-card__title">Log in to Wizards Academy</h1>
               <p className="auth-card__subtitle">
-                Access your player profiles, program applications, and schedules.
+                Access your player profiles, program applications, and
+                schedules.
               </p>
             </header>
 
@@ -79,7 +82,10 @@ function LoginPage() {
                 </button>
               </div>
 
-              <button type="submit" className="btn btn--primary auth-form__submit">
+              <button
+                type="submit"
+                className="btn btn--primary auth-form__submit"
+              >
                 Log in
               </button>
             </form>
@@ -89,11 +95,9 @@ function LoginPage() {
               <button
                 type="button"
                 className="auth-form__link-button"
-                onClick={() => {
-                  console.log("TODO: navigate to signup page");
-                }}
+                onClick={() => navigate("/signup")}
               >
-                Create one
+                Create One
               </button>
             </p>
           </section>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
+import { useNavigate } from "react-router-dom";
 
 function SignupPage() {
   const [parentName, setParentName] = useState("");
@@ -8,6 +9,7 @@ function SignupPage() {
   const [playerName, setPlayerName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,7 +52,9 @@ function SignupPage() {
           <section className="auth-card">
             <header className="auth-card__header">
               <p className="auth-card__eyebrow">Create account</p>
-              <h1 className="auth-card__title">Join Wizards Football Academy</h1>
+              <h1 className="auth-card__title">
+                Join Wizards Football Academy
+              </h1>
               <p className="auth-card__subtitle">
                 Create a parent account to enroll players, manage applications,
                 and stay updated on programs.
@@ -119,7 +123,10 @@ function SignupPage() {
                 </div>
               </div>
 
-              <button type="submit" className="btn btn--primary auth-form__submit">
+              <button
+                type="submit"
+                className="btn btn--primary auth-form__submit"
+              >
                 Create account
               </button>
             </form>
@@ -129,9 +136,7 @@ function SignupPage() {
               <button
                 type="button"
                 className="auth-form__link-button"
-                onClick={() => {
-                  console.log("TODO: navigate to login page");
-                }}
+                onClick={() => navigate("/login")}
               >
                 Log in
               </button>
