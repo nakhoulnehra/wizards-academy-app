@@ -102,7 +102,7 @@ function HomePage() {
         {/* Support Box */}
         <div id="support-box" className="support-box">
           <div className="support-box__header">
-            <h3>Ask a Librarian</h3>
+            <h3>Ask for help</h3>
             <button className="support-box__close" onClick={() => document.getElementById('support-box').classList.remove('active')}>×</button>
           </div>
           <div className="support-box__content">
