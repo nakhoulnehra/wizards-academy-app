@@ -6,7 +6,11 @@ import ProgramFilterSection from "../components/home/ProgramFilterSection.jsx";
 import HighlightsStrip from "../components/home/HighlightsStrip";
 import FeaturedProgramsSection from "../components/home/FeaturedProgramsSection";
 
+import useAuthStore from "../store/authStore";
+
 function HomePage() {
+  const user = useAuthStore((state) => state.user);
+
   // TODO: later this comes from your backend
   const services = [
     {
@@ -63,7 +67,13 @@ function HomePage() {
 
               <div className="hero__actions">
                 <button className="btn btn--primary">Explore programs</button>
-                <a href="/login" className="btn btn--outline">Log in / Create account</a>
+
+                {/* HIDE LOGIN/CREATE WHEN LOGGED IN */}
+                {!user && (
+                  <a href="/login" className="btn btn--outline">
+                    Log in / Create account
+                  </a>
+                )}
               </div>
 
               <div className="hero__meta">
