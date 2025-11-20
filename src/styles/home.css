@@ -469,3 +469,131 @@
   padding-top: 2.5rem;
   padding-bottom: 2.5rem;
 }
+.support-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(168, 85, 255, 0.5);
+  text-decoration: none;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.support-button:hover {
+  background: #9333ea;
+  box-shadow: 0 6px 25px rgba(168, 85, 255, 0.7);
+  transform: scale(1.05);
+}
+
+/* Support Button */
+.support-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #a855f7;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(168, 85, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.support-button:hover {
+  background: #9333ea;
+  box-shadow: 0 6px 25px rgba(168, 85, 255, 0.7);
+  transform: scale(1.05);
+}
+
+/* Support Box */
+.support-box {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 320px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.support-box.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.support-box__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #a855f7;
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.support-box__header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.support-box__close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.support-box__content {
+  padding: 1.5rem;
+}
+
+.support-box__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.support-box__status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444; /* Red for offline */
+}
+
+.support-box__message {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.support-box__contact-btn {
+  width: 100%;
+}
