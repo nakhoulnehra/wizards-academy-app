@@ -51,3 +51,16 @@ export const getProgramFilters = async () => {
   return response.json();
 };
 
+/**
+ * Fetch recent programs
+ * @param {number} limit - Number of programs to fetch (default: 3)
+ * @returns {Promise<{success: boolean, programs: Array}>}
+ */
+export async function getRecentPrograms(limit = 3) {
+  const res = await fetch(`${API_URL}/programs/recent?limit=${limit}`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch recent programs: ${res.statusText}`);
+  }
+  return res.json();
+}
+

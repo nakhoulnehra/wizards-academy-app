@@ -12,13 +12,11 @@ function AllProgramsPage() {
     cities: [],
     countries: [],
     status: [],
-    hasPrograms: [],
   });
   const [selectedFilters, setSelectedFilters] = useState({
     city: searchParams.get("city") || "",
     country: searchParams.get("country") || "",
     status: searchParams.get("status") || "",
-    hasPrograms: searchParams.get("hasPrograms") || "",
   });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -41,7 +39,6 @@ function AllProgramsPage() {
           cities: data.cities || [],
           countries: data.countries || [],
           status: data.status || [],
-          hasPrograms: data.hasPrograms || [],
         });
       } catch (err) {
         console.error("Failed to fetch filters:", err);
@@ -63,7 +60,6 @@ function AllProgramsPage() {
           ...(selectedFilters.city && { city: selectedFilters.city }),
           ...(selectedFilters.country && { country: selectedFilters.country }),
           ...(selectedFilters.status && { status: selectedFilters.status }),
-          ...(selectedFilters.hasPrograms && { hasPrograms: selectedFilters.hasPrograms }),
         };
 
         const response = await getAcademies(params);
@@ -174,22 +170,6 @@ function AllProgramsPage() {
                     ))}
                   </select>
                 </div>
-
-                <div className="field">
-                  <label htmlFor="filter-hasPrograms">Has Programs</label>
-                  <select
-                    id="filter-hasPrograms"
-                    value={selectedFilters.hasPrograms || "Any"}
-                    onChange={(e) => handleFilterChange("hasPrograms", e.target.value)}
-                  >
-                    <option value="Any">Any</option>
-                    {filters.hasPrograms.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
             </div>
 
@@ -236,11 +216,6 @@ function AllProgramsPage() {
                             {academy.phone && (
                               <p className="program-card__start">
                                 📞 {academy.phone}
-                              </p>
-                            )}
-                            {academy.programCount > 0 && (
-                              <p className="program-card__start">
-                                ⚽ {academy.programCount} program{academy.programCount !== 1 ? "s" : ""} available
                               </p>
                             )}
 
