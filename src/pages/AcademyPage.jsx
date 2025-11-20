@@ -156,7 +156,7 @@ function AcademyPage() {
         <section className="section section--programs">
           <div className="container">
             <header className="section-header">
-              <p className="section-header__eyebrow">All Academies</p>
+              <p className="section-header__eyebrow">All academies</p>
               <h2 className="section-header__title">
                 Discover all available academies.
               </h2>
