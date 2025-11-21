@@ -36,13 +36,10 @@ function Navbar() {
         {/* CENTER NAV LINKS */}
         <nav className="navbar__nav">
           <a href="#programs">Programs</a>
-          <Link to="/academy">All Academies</Link>
+          <Link to="/academy">Academies</Link>
           <a href="#tournaments">Tournaments</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
-
-          {/* ADMIN-ONLY NAV LINK */}
-          {isAdmin && <Link to="/admin/academies/new">+ Add Academy</Link>}
         </nav>
 
         {/* RIGHT SIDE AUTH BUTTONS */}

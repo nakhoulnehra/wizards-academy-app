@@ -1,33 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getRecentPrograms } from "../../services/programsService";
+import { useNavigate } from "react-router-dom";
 
-function FeaturedProgramsSection() {
-  // TODO: later, replace this with data from the backend
-  const programs = [
-    {
-      id: 1,
-      title: "Spring 2026 Academy Season",
-      tag: "Academy • Beirut",
-      description:
-        "Full-season training cycle with weekly sessions, friendly matches, and progress reports for players U11–U13.",
-      startDate: "Starts March 15, 2026",
-    },
-    {
-      id: 2,
-      title: "Goalkeeper Intensive Clinic",
-      tag: "Clinic • All locations",
-      description:
-        "Short, high-intensity clinic focused on shot-stopping, positioning, and distribution for keepers U12–U16.",
-      startDate: "Starts April 2, 2026",
-    },
-    {
-      id: 3,
-      title: "Summer Tournament Series",
-      tag: "Tournament • Multi-city",
-      description:
-        "Competitive summer tournament with group stages and finals for academy and invited teams.",
-      startDate: "Starts July 5, 2026",
-    },
-  ];
+function FeaturedProgramsSection({ limit = 3 }) {
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  // Small date formatter: "Starts Mar 15, 2026"
+  const niceStart = (iso) => {
+    if (!iso) return "Starts TBA";
+    const d = new Date(iso);
+    return `Starts ${d.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })}`;
+  };
+
+  // Build the small tag line like "Academy • Beirut" (fallbacks if city missing)
+  const makeTag = (p) => {
+    // p.type comes as Title Case from backend (via toTitle), location is city
+    const left = p.type || "Program";
+    const right = p.location || p.academyName || "TBA";
+    return `${left} • ${right}`;
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        setLoading(true);
+        const data = await getRecentPrograms(limit, controller.signal);
+        setPrograms(data);
+        setError(null);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || "Failed to load programs");
+      } finally {
+        setLoading(false);
+      }
+    })();
+    return () => controller.abort();
+  }, [limit]);
 
   return (
     <section className="section section--featured-programs">
@@ -38,36 +54,70 @@ function FeaturedProgramsSection() {
             Upcoming programs you can enroll in.
           </h2>
           <p className="section-header__subtitle">
-            A quick look at some of the key academy cycles, clinics, and
-            tournaments you don&apos;t want to miss.
+            A quick look at key academy cycles, clinics, and tournaments you
+            don&apos;t want to miss.
           </p>
         </header>
 
-        <div className="featured-programs__grid">
-          {programs.map((program) => (
-            <article key={program.id} className="program-card">
-              <div className="program-card__image">
-                <div className="program-card__badge">Featured</div>
-              </div>
+        {loading && (
+          <div style={{ textAlign: "center", padding: "2rem" }}>
+            <p>Loading featured programs…</p>
+          </div>
+        )}
 
-              <div className="program-card__body">
-                <p className="program-card__tag">{program.tag}</p>
-                <h3 className="program-card__title">{program.title}</h3>
-                <p className="program-card__description">
-                  {program.description}
-                </p>
-                <p className="program-card__start">{program.startDate}</p>
+        {error && !loading && (
+          <div style={{ textAlign: "center", padding: "2rem" }}>
+            <p>{error}</p>
+          </div>
+        )}
 
-                <div className="program-card__actions">
-                  <button className="btn btn--primary btn--sm">
-                    View details
-                  </button>
-                  <button className="btn btn--ghost btn--sm">Apply now</button>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+        {!loading && !error && (
+          <div className="featured-programs__grid">
+            {programs.length === 0 ? (
+              <p style={{ textAlign: "center", padding: "2rem" }}>
+                No upcoming programs yet. Check back soon.
+              </p>
+            ) : (
+              programs.map((program) => (
+                <article key={program.id} className="program-card">
+                  <div className="program-card__image">
+                    <div className="program-card__badge">Featured</div>
+                  </div>
+
+                  <div className="program-card__body">
+                    <p className="program-card__tag">{makeTag(program)}</p>
+                    <h3 className="program-card__title">{program.title}</h3>
+                    <p className="program-card__description">
+                      {program.description}
+                    </p>
+                    <p className="program-card__start">
+                      {niceStart(program.startDate)}
+                    </p>
+
+                    <div className="program-card__actions">
+                      <button
+                        className="btn btn--primary btn--sm"
+                        onClick={() =>
+                          navigate(`/programs/${program.slug || program.id}`)
+                        }
+                      >
+                        View details
+                      </button>
+                      <button
+                        className="btn btn--ghost btn--sm"
+                        onClick={() =>
+                          navigate(`/apply?programId=${program.id}`)
+                        }
+                      >
+                        Apply now
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
