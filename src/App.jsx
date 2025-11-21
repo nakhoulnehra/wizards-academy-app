@@ -23,11 +23,8 @@ function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
-    // Initialize auth from localStorage
     initializeAuth();
 
-    // Backend connection check removed - root endpoint doesn't exist
-    // The backend only has /auth, /programs, and /academies routes
   }, [initializeAuth]);
 
   return (
