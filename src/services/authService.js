@@ -1,4 +1,5 @@
 // src/services/authService.js
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const TOKEN_KEY = "wfa_auth_token";
 
@@ -31,7 +32,7 @@ export const login = async (email, password) => {
 };
 
 /**
- * Signup user (creates CLIENT with PENDING status)
+ * Signup user (creates CLIENT user, status ACTIVE)
  * @param {{email:string,password:string,firstName:string,lastName:string,phone?:string|null}} payload
  * @returns {Promise<{message:string}>}
  */
@@ -62,7 +63,7 @@ export const signup = async ({
     throw new Error(data.error || data.message || "Failed to create account");
   }
 
-  // Backend returns: { message: 'Signup successful. Check your email to verify.' }
+  // Backend returns: { message: 'Signup successful. You can now log in.' }
   return data;
 };
 
