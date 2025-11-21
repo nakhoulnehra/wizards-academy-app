@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom"; // ⬅️ ADD THIS
 import logo from "../../assets/images/wfa-logo.png";
 
+
 function Navbar() {
   return (
     <header className="navbar">
@@ -28,7 +29,7 @@ function Navbar() {
           <a href="#programs">Programs</a>
           <a href="#teams">Teams</a>
           <a href="#tournaments">Tournaments</a>
-          <a href="#about">About</a>
+          <Link to="/about">About Us</Link> 
           <a href="#contact">Contact</a>
         </nav>
 

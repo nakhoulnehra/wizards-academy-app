@@ -5,12 +5,16 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import AboutPage from "./pages/AboutPage";
+import ProgramsPage from "./components/home/FeaturedProgramsSection.jsx"; 
 
 // GLOBAL STYLES
 import "./styles/globals.css";
 import "./styles/layout.css";
 import "./styles/home.css";
 import "./styles/auth.css";
+import "./styles/about.css";
+
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -29,16 +33,19 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/programs" element={<ProgramsPage />} /> 
+        
       </Routes>
 
-      {/* 
+      { 
         <div className="backend-status">
           <span className="backend-status__label">Backend:</span>
           <span className="backend-status__message">{message}</span>
         </div>
-      */}
+      }
 
     </Router>
   );
