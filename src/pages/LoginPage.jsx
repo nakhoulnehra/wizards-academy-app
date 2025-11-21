@@ -2,26 +2,27 @@ import React, { useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "../store/authStore";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Logging in with:", { email, password });
+    // Call backend via authStore -> authService
+    const result = await login(email, password);
 
-    // TODO: connect to backend
-    // fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ email, password }),
-    // })
-    //   .then(res => res.json())
-    //   .then(data => { ...handle success... })
-    //   .catch(err => { ...handle error... });
+    if (!result.success) {
+      alert(result.error || "Login failed");
+      return;
+    }
+
+    // On success, go to academies page (admin or normal user)
+    navigate("/academy");
   };
 
   return (
