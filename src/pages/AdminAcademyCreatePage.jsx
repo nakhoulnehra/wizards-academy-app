@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { getAuthHeaders } from "../services/authService";
+import useAuthStore from "../store/authStore";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 function AdminAcademyCreatePage() {
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+
   const [form, setForm] = useState({
     name: "",
     city: "",
@@ -19,6 +22,13 @@ function AdminAcademyCreatePage() {
     isActive: true,
   });
   const [submitting, setSubmitting] = useState(false);
+
+  // 🔒 Protect this page: only ADMIN can view
+  useEffect(() => {
+    if (!user || user.role !== "ADMIN") {
+      navigate("/"); // redirect non-admins / logged-out users to home
+    }
+  }, [user, navigate]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({
@@ -35,7 +45,6 @@ function AdminAcademyCreatePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Force main descriptive fields to be filled
     if (
       !form.name.trim() ||
       !form.city.trim() ||
@@ -56,7 +65,6 @@ function AdminAcademyCreatePage() {
       isActive: !!form.isActive,
     };
 
-    // Optional numeric fields
     if (form.latitude.trim()) {
       const lat = Number(form.latitude);
       if (Number.isNaN(lat)) {
@@ -77,6 +85,7 @@ function AdminAcademyCreatePage() {
 
     try {
       setSubmitting(true);
+
       const res = await fetch(`${API_URL}/academies`, {
         method: "POST",
         headers: {
@@ -89,7 +98,6 @@ function AdminAcademyCreatePage() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        // Backend uses { message, errors } on validation errors
         if (data.errors && Array.isArray(data.errors)) {
           alert(`Validation error:\n- ${data.errors.join("\n- ")}`);
         } else {
@@ -98,7 +106,7 @@ function AdminAcademyCreatePage() {
         return;
       }
 
-      // Success – go back to academies list
+      // On success, go back to academy list
       navigate("/academy");
     } catch (err) {
       console.error("Create academy error:", err);
@@ -116,10 +124,10 @@ function AdminAcademyCreatePage() {
           <div className="container">
             <header className="section-header">
               <p className="section-header__eyebrow">Admin</p>
-              <h2 className="section-header__title">Add a new academy</h2>
+              <h2 className="section-header__title">Add new academy</h2>
               <p className="section-header__subtitle">
-                Fill in all academy details. Required fields must be completed
-                before saving.
+                Create a new academy location. All fields are required except
+                coordinates.
               </p>
             </header>
 
@@ -163,7 +171,7 @@ function AdminAcademyCreatePage() {
                 />
               </div>
 
-              {/* Address */}
+              {/* Address line 1 */}
               <div className="auth-form__field">
                 <label htmlFor="academy-address">Address line 1 *</label>
                 <input
@@ -187,7 +195,7 @@ function AdminAcademyCreatePage() {
                 />
               </div>
 
-              {/* Lat / Lng (optional) */}
+              {/* Latitude / Longitude (optional) */}
               <div className="auth-form__row auth-form__row--two">
                 <div className="auth-form__field">
                   <label htmlFor="academy-latitude">Latitude (optional)</label>
