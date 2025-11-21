@@ -8,6 +8,7 @@ import SignupPage from "./pages/SignupPage";
 import AcademyPage from "./pages/AcademyPage";
 import AdminAcademyCreatePage from "./pages/AdminAcademyCreatePage";
 import AdminAcademyEditPage from "./pages/AdminAcademyEditPage";
+import AboutPage from "./pages/AboutPage";
 
 // STORE
 import useAuthStore from "./store/authStore";
@@ -28,6 +29,7 @@ function App() {
 
     // Backend connection check removed - root endpoint doesn't exist
     // The backend only has /auth, /programs, and /academies routes
+    setMessage("Ready");
   }, [initializeAuth]);
 
   return (
@@ -36,6 +38,12 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+
+        {/* Extra routes kept from HEAD */}
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/basedev" element={<AcademyPage />} />
+
+        {/* Public academy page from origin/main */}
         <Route path="/academy" element={<AcademyPage />} />
 
         {/* ADMIN ROUTES */}
@@ -49,12 +57,10 @@ function App() {
         />
       </Routes>
 
-      {/* 
-        <div className="backend-status">
-          <span className="backend-status__label">Backend:</span>
-          <span className="backend-status__message">{message}</span>
-        </div>
-      */}
+      <div className="backend-status">
+        <span className="backend-status__label">Backend:</span>
+        <span className="backend-status__message">{message}</span>
+      </div>
     </Router>
   );
 }

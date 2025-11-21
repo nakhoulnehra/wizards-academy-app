@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/wfa-logo.png";
 import useAuthStore from "../../store/authStore";
 
+
 function Navbar() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
@@ -38,7 +39,7 @@ function Navbar() {
           <a href="#programs">Programs</a>
           <Link to="/academy">Academies</Link>
           <a href="#tournaments">Tournaments</a>
-          <a href="#about">About</a>
+          <Link to="/about">About Us</Link> 
           <a href="#contact">Contact</a>
         </nav>
 
