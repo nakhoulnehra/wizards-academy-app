@@ -5,7 +5,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-import AllProgramsPage from "./pages/AllProgramsPage";
+import AcademyPage from "./pages/AcademyPage";
+import AdminAcademyCreatePage from "./pages/AdminAcademyCreatePage";
+import AdminAcademyEditPage from "./pages/AdminAcademyEditPage";
 
 // STORE
 import useAuthStore from "./store/authStore";
@@ -34,7 +36,17 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/programs" element={<AllProgramsPage />} />
+        <Route path="/academy" element={<AcademyPage />} />
+
+        {/* ADMIN ROUTES */}
+        <Route
+          path="/admin/academies/new"
+          element={<AdminAcademyCreatePage />}
+        />
+        <Route
+          path="/admin/academies/:id/edit"
+          element={<AdminAcademyEditPage />}
+        />
       </Routes>
 
       {/* 
@@ -43,7 +55,6 @@ function App() {
           <span className="backend-status__message">{message}</span>
         </div>
       */}
-
     </Router>
   );
 }

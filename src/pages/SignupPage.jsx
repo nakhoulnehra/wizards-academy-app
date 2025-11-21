@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { useNavigate } from "react-router-dom";
+import { signup } from "../services/authService";
 
 function SignupPage() {
   const [parentName, setParentName] = useState("");
@@ -9,37 +10,57 @@ function SignupPage() {
   const [playerName, setPlayerName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
+    const trimmedParent = parentName.trim();
+    const trimmedEmail = email.trim();
+
+    if (!trimmedParent || !trimmedEmail || !password || !confirmPassword) {
+      alert("Please fill in all required fields.");
       return;
     }
 
-    console.log("Signing up with:", {
-      parentName,
-      email,
-      playerName,
-      password,
-    });
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
 
-    // TODO: connect to backend
-    // fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     parentName,
-    //     email,
-    //     playerName,
-    //     password,
-    //   }),
-    // })
-    //   .then(res => res.json())
-    //   .then(data => { ...handle success... })
-    //   .catch(err => { ...handle error... });
+    if (password.length < 8) {
+      alert("Password must be at least 8 characters.");
+      return;
+    }
+
+    // Split parent name into first/last for backend
+    const parts = trimmedParent.split(" ").filter(Boolean);
+    const firstName = parts[0];
+    const lastName = parts.slice(1).join(" ") || parts[0];
+
+    try {
+      setSubmitting(true);
+
+      const result = await signup({
+        email: trimmedEmail.toLowerCase(),
+        password,
+        firstName,
+        lastName,
+        phone: null,
+      });
+
+      alert(
+        result.message || "Account created successfully. You can now log in."
+      );
+
+      navigate("/login");
+    } catch (err) {
+      console.error("Signup error:", err);
+      alert(err.message || "Failed to create account.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -115,7 +136,7 @@ function SignupPage() {
                   <input
                     id="confirmPassword"
                     type="password"
-                    placeholder="Confirm password"
+                    placeholder="Re-enter password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
@@ -126,8 +147,9 @@ function SignupPage() {
               <button
                 type="submit"
                 className="btn btn--primary auth-form__submit"
+                disabled={submitting}
               >
-                Create account
+                {submitting ? "Creating account..." : "Create account"}
               </button>
             </form>
 
@@ -135,7 +157,7 @@ function SignupPage() {
               Already have an account?{" "}
               <button
                 type="button"
-                className="auth-form__link-button"
+                className="auth-card__link"
                 onClick={() => navigate("/login")}
               >
                 Log in

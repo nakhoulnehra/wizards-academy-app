@@ -4,23 +4,24 @@ import * as authService from "../services/authService";
 
 const useAuthStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
 
-      // Initialize auth from localStorage
-      // Note: Zustand persist middleware automatically restores state,
-      // but this can be used to verify token validity if needed
+      // Initialize auth from localStorage / persisted state
       initializeAuth: () => {
         const token = authService.getToken();
-        if (token) {
-          // Verify token is still valid (basic check)
-          // In a real app, you might want to verify with backend
-          const userFromToken = authService.getCurrentUser();
-          if (userFromToken && !useAuthStore.getState().user) {
-            // Only set if user not already restored by persist
-            set({ token, user: userFromToken });
-          }
+
+        // If there's no token in storage, make sure we are logged out
+        if (!token) {
+          set({ user: null, token: null });
+          return;
+        }
+
+        // If token exists but state.token is empty (fresh load), set it
+        const state = get();
+        if (!state.token) {
+          set({ token });
         }
       },
 
@@ -29,11 +30,12 @@ const useAuthStore = create(
         try {
           const data = await authService.login(email, password);
           set({
-            user: data.user,
-            token: data.token,
+            user: data.user || null,
+            token: data.token || null,
           });
           return { success: true };
         } catch (error) {
+          console.error("Login error:", error);
           return { success: false, error: error.message };
         }
       },
@@ -44,19 +46,24 @@ const useAuthStore = create(
         set({ user: null, token: null });
       },
 
-      // Helper methods
+      // Helper methods (use `get()` instead of useAuthStore.getState)
       isAdmin: () => {
-        const state = useAuthStore.getState();
+        const state = get();
         return state.user?.role === "ADMIN";
       },
 
       isUser: () => {
-        const state = useAuthStore.getState();
-        return state.user?.role === "CLIENT" || state.user?.role === "COACH" || state.user?.role === "CLINIC" || state.user?.role === "SUPPORT";
+        const role = get().user?.role;
+        return (
+          role === "CLIENT" ||
+          role === "COACH" ||
+          role === "CLINIC" ||
+          role === "SUPPORT"
+        );
       },
 
       isGuest: () => {
-        const state = useAuthStore.getState();
+        const state = get();
         return !state.user;
       },
     }),
@@ -72,4 +79,3 @@ const useAuthStore = create(
 );
 
 export default useAuthStore;
-
