@@ -8,6 +8,7 @@ import SignupPage from "./pages/SignupPage";
 import AcademyPage from "./pages/AcademyPage";
 import AdminAcademyCreatePage from "./pages/AdminAcademyCreatePage";
 import AdminAcademyEditPage from "./pages/AdminAcademyEditPage";
+import AcademyDetailPage from "./pages/AcademyDetailPage";
 
 // STORE
 import useAuthStore from "./store/authStore";
@@ -37,6 +38,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/academy" element={<AcademyPage />} />
+
+        {/* NEW DETAIL ROUTE */}
+        <Route path="/academy/:id" element={<AcademyDetailPage />} />
 
         {/* ADMIN ROUTES */}
         <Route

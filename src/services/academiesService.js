@@ -71,3 +71,14 @@ export const getFeaturedAcademies = async (limit = 3) => {
   // Your backend returns { success: true, academies: [...] }
   return data.academies || [];
 };
+export const getAcademyById = async (id) => {
+  if (!id) {
+    throw new Error("id is required");
+  }
+
+  const response = await fetch(`${API_URL}/academies/${id}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch academy: ${response.statusText}`);
+  }
+  return response.json();
+};

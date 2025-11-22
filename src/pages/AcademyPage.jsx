@@ -300,9 +300,13 @@ function AcademyPage() {
                               <button
                                 type="button"
                                 className="btn btn--primary btn--sm"
+                                onClick={() =>
+                                  navigate(`/academy/${academy.id}`)
+                                }
                               >
                                 View details
                               </button>
+
                               {isAdmin && (
                                 <>
                                   <button
