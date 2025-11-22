@@ -57,3 +57,17 @@ export const getAcademyFilters = async () => {
   return response.json();
 };
 
+export const getFeaturedAcademies = async (limit = 3) => {
+  const response = await fetch(`${API_URL}/academies/featured?limit=${limit}`);
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch featured academies: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data = await response.json();
+
+  // Your backend returns { success: true, academies: [...] }
+  return data.academies || [];
+};
