@@ -50,7 +50,28 @@ export const getProgramFilters = async () => {
   }
   return response.json();
 };
+export const getProgramsByAcademy = async (academyId, options = {}) => {
+  if (!academyId) {
+    throw new Error("academyId is required");
+  }
 
+  const queryParams = new URLSearchParams();
+  if (options.type) queryParams.append("type", options.type);
+
+  const url = `${API_URL}/programs/by-academy/${academyId}${
+    queryParams.toString() ? `?${queryParams.toString()}` : ""
+  }`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch programs for academy: ${response.statusText}`
+    );
+  }
+  // backend returns { success: true, data: [...] }
+  const data = await response.json();
+  return data.data || [];
+};
 export async function getRecentPrograms(limit = 3, signal) {
   const url = `${API_URL}/programs/recent?limit=${limit}`;
   const res = await fetch(url, { signal });

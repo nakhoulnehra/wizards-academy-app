@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getFeaturedAcademies } from "../../services/academiesService";
 
 function FeaturedAcademiesSection() {
   const [academies, setAcademies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate(); // ✅ THIS WAS MISSING
 
   useEffect(() => {
     const load = async () => {
@@ -94,7 +97,11 @@ function FeaturedAcademiesSection() {
                   )}
 
                   <div className="program-card__actions">
-                    <button type="button" className="btn btn--primary btn--sm">
+                    <button
+                      type="button"
+                      className="btn btn--primary btn--sm"
+                      onClick={() => navigate(`/academy/${academy.id}`)} // ✅ FIXED
+                    >
                       View details
                     </button>
                   </div>

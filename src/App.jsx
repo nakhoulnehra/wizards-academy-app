@@ -8,6 +8,7 @@ import SignupPage from "./pages/SignupPage";
 import AcademyPage from "./pages/AcademyPage";
 import AdminAcademyCreatePage from "./pages/AdminAcademyCreatePage";
 import AdminAcademyEditPage from "./pages/AdminAcademyEditPage";
+import AcademyDetailPage from "./pages/AcademyDetailPage";
 import AboutPage from "./pages/AboutPage";
 
 // Treat the FeaturedProgramsSection as a page for /programs
@@ -43,6 +44,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/academy" element={<AcademyPage />} />
+
+        {/* NEW DETAIL ROUTE */}
+        <Route path="/academy/:id" element={<AcademyDetailPage />} />
 
         {/* ADMIN ROUTES */}
         <Route path="/admin/academies/new" element={<AdminAcademyCreatePage />} />
