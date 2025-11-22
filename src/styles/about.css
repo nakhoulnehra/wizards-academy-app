@@ -321,6 +321,7 @@
   text-align: center;
   max-width: 600px;
   margin: 0 auto 3rem;
+  width: 100%;
 }
 
 .about-page .section-header__eyebrow {
@@ -329,18 +330,22 @@
   letter-spacing: 0.2em;
   color: var(--color-text-muted);
   margin-bottom: 0.75rem;
+  text-align: center;
 }
 
 .about-page .section-header__title {
   font-size: 2rem;
-  margin: 0 0 1rem;
+  margin: 0 auto 1rem;
+  text-align: center;
 }
 
 .about-page .section-header__subtitle {
   font-size: 0.95rem;
   color: var(--color-text-muted);
   line-height: 1.6;
-  margin: 0;
+  margin: 0 auto;
+  text-align: center;
+  max-width: 100%;
 }
 
 .about-page .choose-us-grid {
