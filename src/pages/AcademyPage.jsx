@@ -165,7 +165,25 @@ function AcademyPage() {
                 facilities.
               </p>
             </header>
-
+            {isAdmin && (
+              <div
+                className="section-toolbar"
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: "-0.5rem",
+                  marginBottom: "1.25rem",
+                }}
+              >
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  onClick={() => navigate("/admin/academies/new")}
+                >
+                  + New Academy
+                </button>
+              </div>
+            )}
             {/* Filters */}
             <div className="program-filter" style={{ marginBottom: "3rem" }}>
               <div className="program-filter__fields">
@@ -220,24 +238,6 @@ function AcademyPage() {
                     ))}
                   </select>
                 </div>
-
-                <div className="field">
-                  <label htmlFor="filter-hasPrograms">Has Programs</label>
-                  <select
-                    id="filter-hasPrograms"
-                    value={selectedFilters.hasPrograms || "Any"}
-                    onChange={(e) =>
-                      handleFilterChange("hasPrograms", e.target.value)
-                    }
-                  >
-                    <option value="Any">Any</option>
-                    {filters.hasPrograms.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
             </div>
 
@@ -260,9 +260,20 @@ function AcademyPage() {
               <>
                 <div className="featured-programs__grid">
                   {academies.length === 0 ? (
-                    <p style={{ textAlign: "center", padding: "3rem" }}>
-                      No academies found matching your filters.
-                    </p>
+                    <div style={{ textAlign: "center", padding: "3rem" }}>
+                      <p>No academies found matching your filters.</p>
+                      {isAdmin && (
+                        <div style={{ marginTop: "1rem" }}>
+                          <button
+                            type="button"
+                            className="btn btn--primary"
+                            onClick={() => navigate("/admin/academies/new")}
+                          >
+                            + Create Academy
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     academies.map((academy) => {
                       return (
@@ -286,13 +297,6 @@ function AcademyPage() {
                             {academy.phone && (
                               <p className="program-card__start">
                                 📞 {academy.phone}
-                              </p>
-                            )}
-                            {academy.programCount > 0 && (
-                              <p className="program-card__start">
-                                ⚽ {academy.programCount} program
-                                {academy.programCount !== 1 ? "s" : ""}{" "}
-                                available
                               </p>
                             )}
 

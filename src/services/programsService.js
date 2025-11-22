@@ -72,3 +72,14 @@ export const getProgramsByAcademy = async (academyId, options = {}) => {
   const data = await response.json();
   return data.data || [];
 };
+export async function getRecentPrograms(limit = 3, signal) {
+  const url = `${API_URL}/programs/recent?limit=${limit}`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || `Failed to load programs (${res.status})`);
+  }
+  const data = await res.json();
+  return data.programs || [];
+}
+
