@@ -5,6 +5,7 @@ import ServicesSection from "../components/home/ServicesSection";
 import ProgramFilterSection from "../components/home/ProgramFilterSection.jsx";
 import HighlightsStrip from "../components/home/HighlightsStrip";
 import FeaturedProgramsSection from "../components/home/FeaturedProgramsSection";
+import FeaturedAcademiesSection from "../components/home/FeaturedAcademiesSection";
 
 import useAuthStore from "../store/authStore";
 
@@ -15,7 +16,7 @@ function HomePage() {
   const services = [
     {
       key: "academy",
-      name: "Academy Programs",
+      name: "Academies",
       shortDescription:
         "Season-long training cycles with teams by age group, clear structure, and regular fixtures.",
       slug: "academy-programs",
@@ -96,6 +97,7 @@ function HomePage() {
 
         {/* NEW: SERVICES GRID */}
         <ServicesSection services={services} />
+        <FeaturedAcademiesSection />
         <ProgramFilterSection />
         <HighlightsStrip />
         <FeaturedProgramsSection />
