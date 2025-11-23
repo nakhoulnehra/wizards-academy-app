@@ -1,3 +1,5 @@
+import { getAuthHeaders } from "./authService";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 /**
@@ -41,7 +43,6 @@ export const getPrograms = async (params = {}) => {
 
 /**
  * Fetch available filter options
- * @returns {Promise<{locations: string[], ageGroups: string[], types: string[]}>}
  */
 export const getProgramFilters = async () => {
   const response = await fetch(`${API_URL}/programs/filters`);
@@ -50,6 +51,7 @@ export const getProgramFilters = async () => {
   }
   return response.json();
 };
+
 export const getProgramsByAcademy = async (academyId, options = {}) => {
   if (!academyId) {
     throw new Error("academyId is required");
@@ -72,6 +74,7 @@ export const getProgramsByAcademy = async (academyId, options = {}) => {
   const data = await response.json();
   return data.data || [];
 };
+
 export async function getRecentPrograms(limit = 3, signal) {
   const url = `${API_URL}/programs/recent?limit=${limit}`;
   const res = await fetch(url, { signal });
@@ -83,3 +86,88 @@ export async function getRecentPrograms(limit = 3, signal) {
   return data.programs || [];
 }
 
+export const createProgram = async (academyId, type, data) => {
+  const res = await fetch(`${API_URL}/programs/admin/programs/${academyId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(), // ✅ Authorization header
+    },
+    body: JSON.stringify({ ...data, type }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `Failed to create program (${res.status}) ${text || ""}`.trim()
+    );
+  }
+
+  return res.json();
+};
+
+/**
+ * ADMIN: get single program by id (for editing)
+ */
+export const getProgramById = async (programId) => {
+  const res = await fetch(`${API_URL}/programs/admin/programs/${programId}`, {
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `Failed to load program (${res.status}) ${text || ""}`.trim()
+    );
+  }
+
+  const data = await res.json();
+  return data.program || null;
+};
+
+/**
+ * ADMIN: update existing program
+ */
+export const updateProgram = async (programId, data) => {
+  const res = await fetch(`${API_URL}/programs/admin/programs/${programId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `Failed to update program (${res.status}) ${text || ""}`.trim()
+    );
+  }
+
+  const body = await res.json();
+  return body.program;
+};
+
+/**
+ * ADMIN: delete program
+ */
+export const deleteProgram = async (programId) => {
+  const res = await fetch(`${API_URL}/programs/admin/programs/${programId}`, {
+    method: "DELETE",
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `Failed to delete program (${res.status}) ${text || ""}`.trim()
+    );
+  }
+
+  return true;
+};
