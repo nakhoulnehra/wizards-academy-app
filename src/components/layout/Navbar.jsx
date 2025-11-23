@@ -35,7 +35,7 @@ function Navbar() {
 
         {/* CENTER NAV LINKS */}
         <nav className="navbar__nav">
-          <Link to="/programs">Programs</Link>
+          <Link to="/programs" className="nav__link">Programs</Link>
           <Link to="/academy">Academies</Link>
           <a href="#tournaments">Tournaments</a>
           <Link to="/about">About</Link>

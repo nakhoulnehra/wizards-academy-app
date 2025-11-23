@@ -10,10 +10,6 @@
 .auth__overlay {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at top left, rgba(168, 85, 255, 0.5), transparent 55%),
-    radial-gradient(circle at top right, rgba(56, 189, 248, 0.35), transparent 55%),
-    radial-gradient(circle at bottom, #020617, #020617 70%);
   opacity: 0.98;
   pointer-events: none;
 }

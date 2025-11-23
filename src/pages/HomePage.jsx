@@ -1,48 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
-import ServicesSection from "../components/home/ServicesSection";
+// import ServicesSection from "../components/home/ServicesSection"; // removed
 import ProgramFilterSection from "../components/home/ProgramFilterSection.jsx";
 import HighlightsStrip from "../components/home/HighlightsStrip";
 import FeaturedProgramsSection from "../components/home/FeaturedProgramsSection";
 import FeaturedAcademiesSection from "../components/home/FeaturedAcademiesSection";
-
 import useAuthStore from "../store/authStore";
 
 function HomePage() {
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
 
-  // TODO: later this comes from your backend
-  const services = [
-    {
-      key: "academy",
-      name: "Academies",
-      shortDescription:
-        "Season-long training cycles with teams by age group, clear structure, and regular fixtures.",
-      slug: "academy-programs",
-    },
-    {
-      key: "clinics",
-      name: "Clinics & Camps",
-      shortDescription:
-        "Short, intensive clinics and camps focused on skills, fitness, and technical development.",
-      slug: "clinics-and-camps",
-    },
-    {
-      key: "tournaments",
-      name: "Tournaments",
-      shortDescription:
-        "Organized competitions for academy teams and invited clubs, with live standings and results.",
-      slug: "tournaments",
-    },
-    {
-      key: "merch",
-      name: "Merchandise",
-      shortDescription:
-        "Official Wizards kits, training gear, and accessories available through our online store.",
-      slug: "merchandise",
-    },
-  ];
+  // show "back to top" after scrolling a bit
+  const [showToTop, setShowToTop] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowToTop(window.scrollY > 200);
+    onScroll(); // initialize on first render
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className="app-root">
@@ -57,8 +35,7 @@ function HomePage() {
             <div className="hero__content">
               <p className="hero__eyebrow">Wizards Football Academy</p>
               <h1 className="hero__title">
-                Forging the next generation of <span>wizards</span> on the
-                pitch.
+                Forging the next generation of <span>wizards</span> on the pitch.
               </h1>
               <p className="hero__subtitle">
                 Elite youth football training with professional coaches, modern
@@ -67,13 +44,13 @@ function HomePage() {
               </p>
 
               <div className="hero__actions">
-                <button className="btn btn--primary">Explore programs</button>
-
-                {/* HIDE LOGIN/CREATE WHEN LOGGED IN */}
+                <Link to="/academy" className="btn btn--primary">
+                  Explore programs
+                </Link>
                 {!user && (
-                  <a href="/login" className="btn btn--outline">
+                  <Link to="/login" className="btn btn--outline">
                     Log in / Create account
-                  </a>
+                  </Link>
                 )}
               </div>
 
@@ -90,63 +67,35 @@ function HomePage() {
               <p className="hero__card-text">
                 Limited spots available. Secure your wizard&apos;s place today.
               </p>
-              <button className="btn btn--ghost">View upcoming programs</button>
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={() => navigate("/academy")}
+              >
+                View upcoming programs
+              </button>
             </div>
           </div>
         </section>
 
-        {/* NEW: SERVICES GRID */}
-        <ServicesSection services={services} />
+        {/* ServicesSection removed */}
+
         <FeaturedAcademiesSection />
         <ProgramFilterSection />
         <HighlightsStrip />
         <FeaturedProgramsSection limit={3} />
 
-        {/* Floating Support Button */}
+        {/* Back-to-top floating button (reuses .support-button styling) */}
         <button
-          className="support-button"
-          onClick={() =>
-            document.getElementById("support-box").classList.toggle("active")
-          }
+          className={`support-button to-top ${showToTop ? "is-visible" : ""}`}
+          aria-label="Back to top"
+          title="Back to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 4l-7 7h4v7h6v-7h4l-7-7z" />
           </svg>
         </button>
-
-        {/* Support Box */}
-        <div id="support-box" className="support-box">
-          <div className="support-box__header">
-            <h3>Ask for help</h3>
-            <button
-              className="support-box__close"
-              onClick={() =>
-                document.getElementById("support-box").classList.remove("active")
-              }
-            >
-              ×
-            </button>
-          </div>
-          <div className="support-box__content">
-            <div className="support-box__status">
-              <div className="support-box__status-indicator"></div>
-              <span>Ask Us</span>
-            </div>
-            <p className="support-box__message">
-              Sorry, chat is offline but you can still get help.
-            </p>
-            <button className="btn btn--primary support-box__contact-btn">
-              Contact us
-            </button>
-          </div>
-        </div>
       </main>
 
       <Footer />

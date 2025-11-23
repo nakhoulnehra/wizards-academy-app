@@ -5,6 +5,7 @@ import "../styles/about.css";
 import "../styles/globals.css";
 import "../styles/layout.css";
 import { Link } from "react-router-dom";
+import useAuthStore from "../store/authStore";
 
 function AboutPage() {
   //TODO: only when connected to backend
@@ -18,6 +19,9 @@ function AboutPage() {
 
   // content of each section of the about page here:
   // Intro Section
+
+  const user = useAuthStore((state) => state.user);
+
   const hero = {
     eyebrow: "Our Story",
     title: "Developing Future Wizards On and Off the Pitch",
@@ -172,7 +176,7 @@ function AboutPage() {
         {/* Story Section 
 
          Story section container where we tell the academy's Journey*/}
-        <section className="section--story">
+        <section className="section--story story-section-left">
           <div className="container">
             {" "}
             {/* Centered container for content */}
@@ -281,24 +285,23 @@ function AboutPage() {
         </section>
         {/* CTA Section */}
         {/*Sign up and Contact Call to Action Section*/}
-        <section className="section--cta">
-          <div className="container">
-            <div className="cta-card">
-              <div className="cta-card__content">
-                <h2 className="cta-card__title">{cta.title}</h2>
-                <p className="cta-card__text">{cta.text}</p>
-              </div>
-              <div className="cta-card__actions">
-                <Link to="/signup" className="btn btn--primary">
-                  Register
-                </Link>
-                <Link to="/contact" className="btn btn--outline">
-                  Contact Us
-                </Link>
-              </div>
-            </div>
-          </div>
+        {!user &&
+                <section className="section--cta">
+                  <div className="container">
+                    <div className="cta-card">
+                      <div className="cta-card__content">
+                        <h2 className="cta-card__title">{cta.title}</h2>
+                        <p className="cta-card__text">{cta.text}</p>
+                      </div>
+                      <div className="cta-card__actions">
+                        <Link to="/signup" className="btn btn--primary">
+                          Register
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
         </section>
+        }
         <Footer /> {/* Footer at the bottom of the About page*/}
       </div>
     </div>

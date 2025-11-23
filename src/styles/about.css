@@ -7,12 +7,6 @@
 .about-page .about-hero__overlay {
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(circle at top left, rgba(168, 85, 255, 0.4), transparent 55%),
-    radial-gradient(circle at top right, rgba(56, 189, 248, 0.3), transparent 55%),
-    radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), #020617 100%);
-  opacity: 0.9;
-  pointer-events: none;
 }
 
 .about-page .about-hero__inner {
@@ -137,6 +131,21 @@
 
 .about-page .story-content__text p:last-child {
   margin-bottom: 0;
+}
+
+/* Align "Our Football Journey" text to the left instead of center */
+.about-page .story-section-left .story-content {
+  text-align: left;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.about-page .story-section-left .story-content__title {
+  text-align: left;
+}
+
+.about-page .story-section-left .story-content__text p {
+  text-align: left;
 }
 
 /* Programs Section */
