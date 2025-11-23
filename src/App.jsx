@@ -10,6 +10,8 @@ import AdminAcademyCreatePage from "./pages/AdminAcademyCreatePage";
 import AdminAcademyEditPage from "./pages/AdminAcademyEditPage";
 import AcademyDetailPage from "./pages/AcademyDetailPage";
 import AboutPage from "./pages/AboutPage";
+import AdminProgramCreatePage from "./pages/AdminProgramCreatePage";
+import AdminProgramEditPage from "./pages/AdminProgramEditPage"; // ✅ NEW
 
 // Treat the FeaturedProgramsSection as a page for /programs
 import ProgramsPage from "./components/home/FeaturedProgramsSection.jsx";
@@ -31,8 +33,7 @@ function App() {
     // Initialize auth from localStorage
     initializeAuth();
 
-    // Backend connection check removed - root endpoint doesn't exist
-    // The backend only has /auth, /programs, and /academies routes
+    // Backend connection check removed
   }, [initializeAuth]);
 
   return (
@@ -49,8 +50,22 @@ function App() {
         <Route path="/academy/:id" element={<AcademyDetailPage />} />
 
         {/* ADMIN ROUTES */}
-        <Route path="/admin/academies/new" element={<AdminAcademyCreatePage />} />
-        <Route path="/admin/academies/:id/edit" element={<AdminAcademyEditPage />} />
+        <Route
+          path="/admin/academies/new"
+          element={<AdminAcademyCreatePage />}
+        />
+        <Route
+          path="/admin/academies/:id/edit"
+          element={<AdminAcademyEditPage />}
+        />
+        <Route
+          path="/admin/academies/:academyId/add-program"
+          element={<AdminProgramCreatePage />}
+        />
+        <Route
+          path="/admin/programs/:programId/edit"
+          element={<AdminProgramEditPage />}
+        />
       </Routes>
 
       {/* Backend status block from the branch */}
