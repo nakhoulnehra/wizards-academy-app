@@ -157,7 +157,7 @@ function SignupPage() {
               Already have an account?{" "}
               <button
                 type="button"
-                className="auth-card__link"
+                className="auth-form__link-button"
                 onClick={() => navigate("/login")}
               >
                 Log in

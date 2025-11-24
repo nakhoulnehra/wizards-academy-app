@@ -605,3 +605,24 @@
 .support-box__contact-btn {
   width: 100%;
 }
+
+/* Smooth show/hide for back-to-top */
+.support-button.to-top {
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 200ms ease, visibility 200ms ease;
+}
+
+.support-button.to-top.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .support-button.to-top { transition: none; }
+}
