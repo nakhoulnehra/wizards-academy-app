@@ -171,3 +171,22 @@ export const deleteProgram = async (programId) => {
 
   return true;
 };
+/**
+ * PUBLIC: get single program by id (for view details page)
+ */
+export const getPublicProgramById = async (programId) => {
+  const res = await fetch(`${API_URL}/programs/${programId}`);
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      // ignore
+    }
+    throw new Error(data.message || `Failed to load program (${res.status})`);
+  }
+
+  const data = await res.json();
+  return data.program || null;
+};

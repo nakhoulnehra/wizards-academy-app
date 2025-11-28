@@ -22,7 +22,7 @@ function AcademyDetailPage() {
   // Admin check
   const isAdmin = useAuthStore((state) => state.isAdmin());
 
-  // ✨ NEW: state for pretty delete confirmation
+  // ✨ state for pretty delete confirmation
   const [confirmDelete, setConfirmDelete] = useState({
     open: false,
     programId: null,
@@ -205,25 +205,43 @@ function AcademyDetailPage() {
                           {program.description}
                         </p>
 
-                        {isAdmin && (
-                          <div className="program-card__actions">
-                            <button
-                              className="btn btn--primary btn--sm"
-                              onClick={() =>
-                                navigate(`/admin/programs/${program.id}/edit`)
-                              }
-                            >
-                              Update
-                            </button>
-                            <button
-                              className="btn btn--outline btn--sm"
-                              style={{ marginLeft: "0.5rem" }}
-                              onClick={() => askDeleteProgram(program)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        )}
+                        {/* SINGLE ACTION ROW */}
+                        <div className="program-card__actions">
+                          {/* ALWAYS VISIBLE */}
+                          <button
+                            className="btn btn--ghost btn--sm"
+                            onClick={() => navigate(`/programs/${program.id}`)}
+                          >
+                            View details
+                          </button>
+
+                          {/* ADMIN BUTTONS */}
+                          {isAdmin && (
+                            <>
+                              <button
+                                className="btn btn--outline btn--sm"
+                                style={{ marginLeft: "0.5rem" }}
+                                onClick={() =>
+                                  navigate(`/admin/programs/${program.id}/edit`)
+                                }
+                              >
+                                Update
+                              </button>
+
+                              <button
+                                className="btn btn--outline btn--sm"
+                                style={{
+                                  marginLeft: "0.5rem",
+                                  borderColor: "#ff7b7b",
+                                  color: "#ff7b7b",
+                                }}
+                                onClick={() => askDeleteProgram(program)}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </article>
                   ))}
@@ -257,25 +275,43 @@ function AcademyDetailPage() {
                           {program.description}
                         </p>
 
-                        {isAdmin && (
-                          <div className="program-card__actions">
-                            <button
-                              className="btn btn--primary btn--sm"
-                              onClick={() =>
-                                navigate(`/admin/programs/${program.id}/edit`)
-                              }
-                            >
-                              Update
-                            </button>
-                            <button
-                              className="btn btn--outline btn--sm"
-                              style={{ marginLeft: "0.5rem" }}
-                              onClick={() => askDeleteProgram(program)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        )}
+                        {/* SINGLE ACTION ROW */}
+                        <div className="program-card__actions">
+                          {/* ALWAYS VISIBLE */}
+                          <button
+                            className="btn btn--ghost btn--sm"
+                            onClick={() => navigate(`/programs/${program.id}`)}
+                          >
+                            View details
+                          </button>
+
+                          {/* ADMIN BUTTONS */}
+                          {isAdmin && (
+                            <>
+                              <button
+                                className="btn btn--outline btn--sm"
+                                style={{ marginLeft: "0.5rem" }}
+                                onClick={() =>
+                                  navigate(`/admin/programs/${program.id}/edit`)
+                                }
+                              >
+                                Update
+                              </button>
+
+                              <button
+                                className="btn btn--outline btn--sm"
+                                style={{
+                                  marginLeft: "0.5rem",
+                                  borderColor: "#ff7b7b",
+                                  color: "#ff7b7b",
+                                }}
+                                onClick={() => askDeleteProgram(program)}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </article>
                   ))}
