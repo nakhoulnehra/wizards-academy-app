@@ -12,9 +12,8 @@ import AcademyDetailPage from "./pages/AcademyDetailPage";
 import AboutPage from "./pages/AboutPage";
 import AdminProgramCreatePage from "./pages/AdminProgramCreatePage";
 import AdminProgramEditPage from "./pages/AdminProgramEditPage"; // ✅ NEW
-
-// Treat the FeaturedProgramsSection as a page for /programs
-import ProgramsPage from "./components/home/FeaturedProgramsSection.jsx";
+import ProgramsPage from "./pages/ProgramsPage";
+import ProgramDetailPage from "./pages/ProgramDetailPage";
 
 // STORE
 import useAuthStore from "./store/authStore";
@@ -41,10 +40,11 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/programs" element={<ProgramsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/academy" element={<AcademyPage />} />
+        <Route path="/programs" element={<ProgramsPage />} />
+        <Route path="/programs/:programId" element={<ProgramDetailPage />} />
 
         {/* NEW DETAIL ROUTE */}
         <Route path="/academy/:id" element={<AcademyDetailPage />} />

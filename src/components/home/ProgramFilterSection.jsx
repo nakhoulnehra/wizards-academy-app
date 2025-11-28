@@ -1,32 +1,60 @@
-import React, { useState } from "react";
+// src/components/home/ProgramFilterSection.jsx
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getProgramFilters } from "../../services/programsService";
 
 function ProgramFilterSection() {
-  // TODO: later these options should come from backend
-  const [filters] = useState({
-    locations: ["Any location", "Beirut", "Jounieh", "Tripoli"],
-    ageGroups: ["All ages", "U8-U10", "U11-U13", "U14-U16", "U17-U18"],
-    types: ["Any type", "Academy", "Clinic", "Tournament"],
+  const navigate = useNavigate();
+
+  const [filters, setFilters] = useState({
+    locations: [],
+    ageGroups: [],
+    types: [],
   });
 
-  const [selectedLocation, setSelectedLocation] = useState("Any location");
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState("All ages");
-  const [selectedType, setSelectedType] = useState("Any type");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
+  const [selectedType, setSelectedType] = useState("");
 
-  // Later this will trigger a real search (API call or navigation)
+  const [loading, setLoading] = useState(true);
+
+  // Load filter options from backend (so only real DB values appear)
+  useEffect(() => {
+    async function loadFilters() {
+      try {
+        const data = await getProgramFilters();
+        setFilters({
+          locations: data.locations || [],
+          ageGroups: data.ageGroups || [],
+          types: data.types || [],
+        });
+      } catch (err) {
+        console.error("Failed to load filters:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadFilters();
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("Search with:", {
-      location: selectedLocation,
-      ageGroup: selectedAgeGroup,
-      type: selectedType,
-    });
+    // Build query string with only selected filters
+    const params = new URLSearchParams();
+    if (selectedLocation) params.set("city", selectedLocation);
+    if (selectedAgeGroup) params.set("ageGroup", selectedAgeGroup);
+    if (selectedType) params.set("type", selectedType);
 
-    // TODO (backend connection idea):
-    // fetch(`${import.meta.env.VITE_API_URL}/programs/search?location=...`)
-    //   .then(res => res.json())
-    //   .then(data => setPrograms(data))
-    // For now, just log to console.
+    // Go to /programs with the filters in the URL
+    const query = params.toString();
+    navigate(query ? `/programs?${query}` : "/programs");
+  };
+
+  const handleViewFullCatalog = () => {
+    // No filters: just navigate to /programs
+    navigate("/programs");
   };
 
   return (
@@ -45,6 +73,7 @@ function ProgramFilterSection() {
 
         <form className="program-filter" onSubmit={handleSubmit}>
           <div className="program-filter__fields">
+            {/* LOCATION */}
             <div className="field">
               <label htmlFor="location">Location</label>
               <select
@@ -52,14 +81,17 @@ function ProgramFilterSection() {
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
               >
-                {filters.locations.map((loc) => (
-                  <option key={loc} value={loc}>
-                    {loc}
-                  </option>
-                ))}
+                <option value="">Any location</option>
+                {!loading &&
+                  filters.locations.map((loc) => (
+                    <option key={loc} value={loc}>
+                      {loc}
+                    </option>
+                  ))}
               </select>
             </div>
 
+            {/* AGE GROUP */}
             <div className="field">
               <label htmlFor="ageGroup">Age group</label>
               <select
@@ -67,14 +99,17 @@ function ProgramFilterSection() {
                 value={selectedAgeGroup}
                 onChange={(e) => setSelectedAgeGroup(e.target.value)}
               >
-                {filters.ageGroups.map((age) => (
-                  <option key={age} value={age}>
-                    {age}
-                  </option>
-                ))}
+                <option value="">All ages</option>
+                {!loading &&
+                  filters.ageGroups.map((age) => (
+                    <option key={age} value={age}>
+                      {age}
+                    </option>
+                  ))}
               </select>
             </div>
 
+            {/* TYPE */}
             <div className="field">
               <label htmlFor="type">Program type</label>
               <select
@@ -82,11 +117,13 @@ function ProgramFilterSection() {
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
               >
-                {filters.types.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
+                <option value="">Any type</option>
+                {!loading &&
+                  filters.types.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
@@ -95,13 +132,11 @@ function ProgramFilterSection() {
             <button type="submit" className="btn btn--primary">
               Search programs
             </button>
+
             <button
               type="button"
               className="link-button"
-              onClick={() => {
-                // later: navigate to /programs or similar
-                console.log("Go to full catalog");
-              }}
+              onClick={handleViewFullCatalog}
             >
               View full catalog →
             </button>
