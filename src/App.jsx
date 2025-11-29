@@ -11,9 +11,10 @@ import AdminAcademyEditPage from "./pages/AdminAcademyEditPage";
 import AcademyDetailPage from "./pages/AcademyDetailPage";
 import AboutPage from "./pages/AboutPage";
 import AdminProgramCreatePage from "./pages/AdminProgramCreatePage";
-import AdminProgramEditPage from "./pages/AdminProgramEditPage"; // ✅ NEW
+import AdminProgramEditPage from "./pages/AdminProgramEditPage"; 
 import ProgramsPage from "./pages/ProgramsPage";
 import ProgramDetailPage from "./pages/ProgramDetailPage";
+import ContactPage from "./pages/contact";
 
 // STORE
 import useAuthStore from "./store/authStore";
@@ -29,10 +30,7 @@ function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
-    // Initialize auth from localStorage
     initializeAuth();
-
-    // Backend connection check removed
   }, [initializeAuth]);
 
   return (
@@ -45,30 +43,19 @@ function App() {
         <Route path="/academy" element={<AcademyPage />} />
         <Route path="/programs" element={<ProgramsPage />} />
         <Route path="/programs/:programId" element={<ProgramDetailPage />} />
-
-        {/* NEW DETAIL ROUTE */}
         <Route path="/academy/:id" element={<AcademyDetailPage />} />
 
         {/* ADMIN ROUTES */}
-        <Route
-          path="/admin/academies/new"
-          element={<AdminAcademyCreatePage />}
-        />
-        <Route
-          path="/admin/academies/:id/edit"
-          element={<AdminAcademyEditPage />}
-        />
-        <Route
-          path="/admin/academies/:academyId/add-program"
-          element={<AdminProgramCreatePage />}
-        />
-        <Route
-          path="/admin/programs/:programId/edit"
-          element={<AdminProgramEditPage />}
-        />
+        <Route path="/admin/academies/new" element={<AdminAcademyCreatePage />} />
+        <Route path="/admin/academies/:id/edit" element={<AdminAcademyEditPage />} />
+        <Route path="/admin/academies/:academyId/add-program" element={<AdminProgramCreatePage />} />
+        <Route path="/admin/programs/:programId/edit" element={<AdminProgramEditPage />} />
+
+        {/* ✅ ADDED CONTACT ROUTE */}
+        <Route path="/contact" element={<ContactPage />} />
+ 
       </Routes>
 
-      {/* Backend status block from the branch */}
       <div className="backend-status">
         <span className="backend-status__label">Backend:</span>
         <span className="backend-status__message">{message}</span>

@@ -39,7 +39,9 @@ function Navbar() {
           <Link to="/academy">Academies</Link>
           <a href="#tournaments">Tournaments</a>
           <Link to="/about">About</Link>
-          <a href="#contact">Contact</a>
+
+          {/* ✅ UPDATED CONTACT LINK */}
+          <Link to="/contact">Contact</Link>
         </nav>
 
         {/* RIGHT SIDE AUTH BUTTONS */}

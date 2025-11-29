@@ -1,0 +1,31 @@
+.contact-page {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.contact-title {
+  font-size: 2.4rem;
+  margin-bottom: 40px;
+  color: #fff;
+}
+
+.contact-card {
+  background: #11132a;
+  padding: 30px;
+  border-radius: 16px;
+  max-width: 700px;
+  margin: 0 auto;
+  box-shadow: 0px 0px 20px rgba(120, 70, 255, 0.3);
+}
+
+.contact-image {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.contact-info p {
+  color: #ddd;
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
