@@ -22,7 +22,6 @@ function AdminProgramEditPage() {
   const isAdmin = useAuthStore((state) => state.isAdmin());
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [program, setProgram] = useState(null);
   const [form, setForm] = useState({
     title: "",
@@ -59,7 +58,8 @@ function AdminProgramEditPage() {
         });
       } catch (err) {
         console.error(err);
-        setError(err.message || "Failed to load program");
+        alert(err.message || "Failed to load program");
+        navigate("/");
       } finally {
         setLoading(false);
       }
@@ -69,7 +69,13 @@ function AdminProgramEditPage() {
   }, [programId]);
 
   const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [field]:
+        field === "currency"
+          ? value.toUpperCase().slice(0, 3)
+          : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -77,7 +83,6 @@ function AdminProgramEditPage() {
     if (!program) return;
 
     setSubmitting(true);
-    setError("");
 
     try {
       await updateProgram(programId, {
@@ -89,7 +94,8 @@ function AdminProgramEditPage() {
       navigate(`/academy/${program.academyId}`);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to update program");
+      alert(err.message || "Failed to update program");
+    } finally {
       setSubmitting(false);
     }
   };
@@ -103,34 +109,16 @@ function AdminProgramEditPage() {
       <main className="home">
         <section className="section section--programs">
           <div className="container">
-            <button
-              type="button"
-              className="btn btn--ghost btn--sm"
-              onClick={() => navigate(-1)}
-              style={{ marginBottom: "1.5rem" }}
-            >
-              ← Back
-            </button>
-
             <header className="section-header">
-              <p className="section-header__eyebrow">Admin · Programs</p>
-              <h2 className="section-header__title">
-                Edit {prettyType} Program
-              </h2>
+              <p className="section-header__eyebrow">Admin</p>
+              <h2 className="section-header__title">Edit program</h2>
               <p className="section-header__subtitle">
-                For academy:{" "}
-                <strong>
-                  {program?.academyName || "Loading academy name..."}
-                </strong>
+                Update the program details. Required fields must be completed
+                before saving.
               </p>
             </header>
 
-            {loading && <p>Loading program…</p>}
-            {error && !loading && (
-              <p style={{ color: "#ff7b7b", marginTop: "1rem" }}>{error}</p>
-            )}
-
-            {!loading && !error && program && (
+            {program && (
               <form className="auth-form" onSubmit={handleSubmit}>
                 {/* Title */}
                 <div className="auth-form__field">
@@ -158,9 +146,9 @@ function AdminProgramEditPage() {
                 </div>
 
                 {/* Dates */}
-                <div className="auth-form__row">
+                <div className="auth-form__row auth-form__row--two">
                   <div className="auth-form__field">
-                    <label htmlFor="program-start">Start date *</label>
+                    <label htmlFor="program-start">Start date (optional)</label>
                     <input
                       id="program-start"
                       type="date"
@@ -168,17 +156,15 @@ function AdminProgramEditPage() {
                       onChange={(e) =>
                         handleChange("startDate", e.target.value)
                       }
-                      required
                     />
                   </div>
                   <div className="auth-form__field">
-                    <label htmlFor="program-end">End date *</label>
+                    <label htmlFor="program-end">End date (optional)</label>
                     <input
                       id="program-end"
                       type="date"
                       value={form.endDate}
                       onChange={(e) => handleChange("endDate", e.target.value)}
-                      required
                     />
                   </div>
                 </div>
@@ -204,7 +190,7 @@ function AdminProgramEditPage() {
                 </div>
 
                 {/* Price + currency */}
-                <div className="auth-form__row">
+                <div className="auth-form__row auth-form__row--two">
                   <div className="auth-form__field">
                     <label htmlFor="program-price">Price *</label>
                     <input
@@ -218,10 +204,13 @@ function AdminProgramEditPage() {
                     />
                   </div>
                   <div className="auth-form__field">
-                    <label htmlFor="program-currency">Currency *</label>
+                    <label htmlFor="program-currency">
+                      Currency (3 letters) *
+                    </label>
                     <input
                       id="program-currency"
                       type="text"
+                      maxLength={3}
                       value={form.currency}
                       onChange={(e) => handleChange("currency", e.target.value)}
                       required
@@ -230,11 +219,11 @@ function AdminProgramEditPage() {
                 </div>
 
                 <button
-                  className="btn btn--primary auth-form__submit"
                   type="submit"
+                  className="btn btn--primary auth-form__submit"
                   disabled={submitting}
                 >
-                  {submitting ? "Saving changes…" : "Save changes"}
+                  {submitting ? "Saving..." : "Save changes"}
                 </button>
               </form>
             )}
