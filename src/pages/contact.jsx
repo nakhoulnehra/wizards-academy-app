@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
-import contactImg from "../assets/images/contact1.png";
+import contactImg from "../assets/images/des.png";
 import "../styles/contact.css";
 
 export default function ContactPage() {
