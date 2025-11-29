@@ -67,18 +67,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="email">Email Address</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="Enter your email"
-                      required
-                    />
-                  </div>
+                  
 
                   <div className="form-group">
                     <label htmlFor="message">Your Message</label>
