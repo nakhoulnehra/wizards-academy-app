@@ -34,7 +34,6 @@ function AdminProgramCreatePage() {
   });
 
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -43,19 +42,24 @@ function AdminProgramCreatePage() {
         setAcademy(a);
       } catch (err) {
         console.error(err);
-        setError("Failed to load academy details.");
+        alert("Failed to load academy details.");
       }
     };
     load();
   }, [academyId]);
 
   const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [field]:
+        field === "currency"
+          ? value.toUpperCase().slice(0, 3)
+          : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setSubmitting(true);
 
     try {
@@ -63,7 +67,8 @@ function AdminProgramCreatePage() {
       navigate(`/academy/${academyId}`);
     } catch (err) {
       console.error(err);
-      setError(err.message || "Error creating program");
+      alert(err.message || "Error creating program");
+    } finally {
       setSubmitting(false);
     }
   };
@@ -74,35 +79,19 @@ function AdminProgramCreatePage() {
       <main className="home">
         <section className="section section--programs">
           <div className="container">
-            {/* Back button */}
-            <button
-              type="button"
-              className="btn btn--ghost btn--sm"
-              onClick={() => navigate(-1)}
-              style={{ marginBottom: "1.5rem" }}
-            >
-              ← Back
-            </button>
-
-            {/* Header – matches AdminAcademyCreatePage */}
             <header className="section-header">
-              <p className="section-header__eyebrow">Admin · Programs</p>
+              <p className="section-header__eyebrow">Admin</p>
               <h2 className="section-header__title">
-                Create {prettyType} Program
+                Add new {prettyType.toLowerCase()} program
               </h2>
               <p className="section-header__subtitle">
-                For academy:{" "}
-                <strong>{academy?.name || "Loading academy..."}</strong>
+                Create a new {prettyType.toLowerCase()} program for{" "}
+                <strong>{academy?.name || "the academy"}</strong>. All fields
+                are required.
               </p>
             </header>
 
-            {/* Form – same structure & classes as Add new academy */}
             <form className="auth-form" onSubmit={handleSubmit}>
-              {error && (
-                <p style={{ color: "#ff7b7b", marginBottom: "1rem" }}>
-                  {error}
-                </p>
-              )}
 
               {/* Program title */}
               <div className="auth-form__field">
@@ -130,26 +119,24 @@ function AdminProgramCreatePage() {
               </div>
 
               {/* Dates row */}
-              <div className="auth-form__row">
+              <div className="auth-form__row auth-form__row--two">
                 <div className="auth-form__field">
-                  <label htmlFor="program-start">Start date *</label>
+                  <label htmlFor="program-start">Start date (optional)</label>
                   <input
                     id="program-start"
                     type="date"
                     value={form.startDate}
                     onChange={(e) => handleChange("startDate", e.target.value)}
-                    required
                   />
                 </div>
 
                 <div className="auth-form__field">
-                  <label htmlFor="program-end">End date *</label>
+                  <label htmlFor="program-end">End date (optional)</label>
                   <input
                     id="program-end"
                     type="date"
                     value={form.endDate}
                     onChange={(e) => handleChange("endDate", e.target.value)}
-                    required
                   />
                 </div>
               </div>
@@ -173,7 +160,7 @@ function AdminProgramCreatePage() {
               </div>
 
               {/* Price + currency */}
-              <div className="auth-form__row">
+              <div className="auth-form__row auth-form__row--two">
                 <div className="auth-form__field">
                   <label htmlFor="program-price">Price *</label>
                   <input
@@ -189,10 +176,13 @@ function AdminProgramCreatePage() {
                 </div>
 
                 <div className="auth-form__field">
-                  <label htmlFor="program-currency">Currency *</label>
+                  <label htmlFor="program-currency">
+                    Currency (3 letters) *
+                  </label>
                   <input
                     id="program-currency"
                     type="text"
+                    maxLength={3}
                     value={form.currency}
                     onChange={(e) => handleChange("currency", e.target.value)}
                     required
@@ -201,13 +191,11 @@ function AdminProgramCreatePage() {
               </div>
 
               <button
-                className="btn btn--primary auth-form__submit"
                 type="submit"
+                className="btn btn--primary auth-form__submit"
                 disabled={submitting}
               >
-                {submitting
-                  ? `Creating ${prettyType} Program…`
-                  : `Create ${prettyType} Program`}
+                {submitting ? "Saving..." : "Save program"}
               </button>
             </form>
           </div>

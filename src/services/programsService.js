@@ -97,9 +97,14 @@ export const createProgram = async (academyId, type, data) => {
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
+    const errorData = await res.json().catch(() => ({}));
+    // Handle validation errors array
+    if (errorData.errors && Array.isArray(errorData.errors)) {
+      const errorMessage = errorData.errors.join("\n- ");
+      throw new Error(`Validation error:\n- ${errorMessage}`);
+    }
     throw new Error(
-      `Failed to create program (${res.status}) ${text || ""}`.trim()
+      errorData.message || `Failed to create program (${res.status})`
     );
   }
 
@@ -141,9 +146,14 @@ export const updateProgram = async (programId, data) => {
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
+    const errorData = await res.json().catch(() => ({}));
+    // Handle validation errors array
+    if (errorData.errors && Array.isArray(errorData.errors)) {
+      const errorMessage = errorData.errors.join("\n- ");
+      throw new Error(`Validation error:\n- ${errorMessage}`);
+    }
     throw new Error(
-      `Failed to update program (${res.status}) ${text || ""}`.trim()
+      errorData.message || `Failed to update program (${res.status})`
     );
   }
 
