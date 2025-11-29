@@ -44,7 +44,8 @@ function HomePage() {
               </p>
 
               <div className="hero__actions">
-                <Link to="/academy" className="btn btn--primary">
+                {/* CHANGED: from /academy to /programs */}
+                <Link to="/programs" className="btn btn--primary">
                   Explore programs
                 </Link>
                 {!user && (
@@ -67,10 +68,11 @@ function HomePage() {
               <p className="hero__card-text">
                 Limited spots available. Secure your wizard&apos;s place today.
               </p>
+              {/* CHANGED: from /academy to /programs */}
               <button
                 type="button"
                 className="btn btn--ghost"
-                onClick={() => navigate("/academy")}
+                onClick={() => navigate("/programs")}
               >
                 View upcoming programs
               </button>
