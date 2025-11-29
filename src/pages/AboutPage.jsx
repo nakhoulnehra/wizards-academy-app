@@ -11,10 +11,19 @@ function AboutPage() {
   //TODO: only when connected to backend
   const [sections, setSections] = useState([]);
 
+  // show "back to top" after scrolling a bit
+  const [showToTop, setShowToTop] = useState(false);
+  
   useEffect(() => {
     // getAboutSections().then(setSections);
     // For now, just set empty array since getAboutSections is not defined
     setSections([]);
+
+    // Scroll to top functionality
+    const onScroll = () => setShowToTop(window.scrollY > 200);
+    onScroll(); // initialize on first render
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // content of each section of the about page here:
@@ -40,7 +49,7 @@ function AboutPage() {
     "Today, we're proud to be shaping the future of Lebanese football through our structured academy programs, specialized clinics, and competitive tournaments that challenge and inspire our players.",
   ];
   // Wizards Core Programs Section where we highlight the main programs types offered by the academy
-  // Three pathways for every young wizard’s journey
+  // Three pathways for every young wizard's journey
   const programs = [
     {
       icon: "⚽",
@@ -302,6 +311,19 @@ function AboutPage() {
                   </div>
         </section>
         }
+
+        {/* Back-to-top floating button (reuses .support-button styling) */}
+        <button
+          className={`support-button to-top ${showToTop ? "is-visible" : ""}`}
+          aria-label="Back to top"
+          title="Back to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 4l-7 7h4v7h6v-7h4l-7-7z" />
+          </svg>
+        </button>
+
         <Footer /> {/* Footer at the bottom of the About page*/}
       </div>
     </div>
