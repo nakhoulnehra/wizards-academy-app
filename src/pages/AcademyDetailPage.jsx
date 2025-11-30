@@ -106,11 +106,11 @@ function AcademyDetailPage() {
               <>
                 {/* Academy Card */}
                 <article
-                  className="program-card"
+                  className="program-card program-card--academy-entity"
                   style={{ marginBottom: "3rem" }}
                 >
                   <div className="program-card__image">
-                    <div className="program-card__badge">
+                    <div className={`program-card__badge ${academy.isActive ? 'badge--active' : 'badge--inactive'}`}>
                       {academy.isActive ? "Active" : "Inactive"}
                     </div>
                   </div>
@@ -187,7 +187,10 @@ function AcademyDetailPage() {
 
                 <div className="featured-programs__grid">
                   {academyPrograms.map((program) => (
-                    <article key={program.id} className="program-card">
+                    <article 
+                      key={program.id} 
+                      className={`program-card program-card--${program.type?.toLowerCase() || 'academy'}`}
+                    >
                       <div className="program-card__image">
                         <div className="program-card__badge">
                           {program.type}
@@ -257,7 +260,10 @@ function AcademyDetailPage() {
 
                 <div className="featured-programs__grid">
                   {clinicPrograms.map((program) => (
-                    <article key={program.id} className="program-card">
+                    <article 
+                      key={program.id} 
+                      className={`program-card program-card--${program.type?.toLowerCase() || 'clinic'}`}
+                    >
                       <div className="program-card__image">
                         <div className="program-card__badge">
                           {program.type}

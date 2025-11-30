@@ -383,31 +383,93 @@
   overflow: hidden;
 }
 
-/* "Image" area at top of card */
+/* "Image" area at top of card - Complete redesign */
 
 .program-card__image {
   position: relative;
-  height: 140px;
-  background: radial-gradient(
-      circle at 20% 0%,
-      rgba(168, 85, 255, 0.8),
-      transparent 55%
-    ),
-    radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.6), transparent 60%),
-    radial-gradient(circle at bottom, #020617, #020617 70%);
+  height: 100px;
+  background: #0f172a;
+  border-bottom: 3px solid rgba(148, 163, 184, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.3rem;
+  overflow: hidden;
+}
+
+/* Colored accent bar at top for different types */
+.program-card__image::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #a855f5 0%, #3b82f6 100%);
+  z-index: 1;
+}
+
+/* ACADEMY program type - Blue accent */
+.program-card--academy .program-card__image::before {
+  background: linear-gradient(90deg, #3b82f6 0%, #22c55e 100%);
+}
+
+/* CLINIC program type - Pink/Orange accent */
+.program-card--clinic .program-card__image::before {
+  background: linear-gradient(90deg, #ec4899 0%, #f97316 100%);
+}
+
+/* Academy entity cards - Purple accent */
+.program-card--academy-entity .program-card__image::before {
+  background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
 }
 
 .program-card__badge {
-  position: absolute;
-  top: 0.9rem;
-  left: 0.9rem;
-  padding: 0.25rem 0.7rem;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(248, 250, 252, 0.8);
+  position: relative;
+  z-index: 2;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
+  color: #e2e8f0;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Badge colors for different types */
+.program-card--academy .program-card__badge {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #60a5fa;
+}
+
+.program-card--clinic .program-card__badge {
+  background: rgba(236, 72, 153, 0.15);
+  border-color: rgba(236, 72, 153, 0.4);
+  color: #f472b6;
+}
+
+.program-card--academy-entity .program-card__badge {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #a78bfa;
+}
+
+/* Active/Inactive badge variants */
+.badge--active {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  color: #4ade80 !important;
+}
+
+.badge--inactive {
+  background: rgba(148, 163, 184, 0.15) !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+  color: #94a3b8 !important;
 }
 
 /* Body */
@@ -447,11 +509,25 @@
   gap: 0.5rem;
 }
 
-/* Hover */
+/* Hover effects */
 
 .program-card:hover {
-  border-color: rgba(248, 250, 252, 0.8);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(168, 85, 255, 0.8);
+  border-color: rgba(248, 250, 252, 0.6);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 20px rgba(168, 85, 255, 0.3);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+.program-card--academy:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.program-card--clinic:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 20px rgba(236, 72, 153, 0.3);
+}
+
+.program-card--academy-entity:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 20px rgba(139, 92, 246, 0.3);
 }
 
 /* Responsive */

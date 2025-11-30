@@ -79,7 +79,10 @@ function FeaturedProgramsSection({ limit = 3 }) {
               </p>
             ) : (
               programs.map((program) => (
-                <article key={program.id} className="program-card">
+                <article 
+                  key={program.id} 
+                  className={`program-card program-card--${program.type?.toLowerCase() || 'academy'}`}
+                >
                   <div className="program-card__image">
                     <div className="program-card__badge">Featured</div>
                   </div>

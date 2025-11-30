@@ -5,6 +5,7 @@ import {
   getPrograms,
   getProgramFilters,
   deleteProgram,
+  registerForProgram,
 } from "../services/programsService";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -15,6 +16,9 @@ function ProgramsPage() {
   const [searchParams] = useSearchParams();
 
   const isAdmin = useAuthStore((state) => state.isAdmin());
+  const user = useAuthStore((state) => state.user);
+
+  const [registeringProgramId, setRegisteringProgramId] = useState(null);
 
   const [filters, setFilters] = useState({
     locations: [],
@@ -94,6 +98,33 @@ function ProgramsPage() {
   const handleFilterChange = (field, value) => {
     setSelected((prev) => ({ ...prev, [field]: value }));
     setPage(1);
+  };
+
+  const handleRegister = async (programId) => {
+    // If not logged in, send to login first
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    // Admins shouldn’t register into programs
+    if (isAdmin) {
+      return;
+    }
+    try {
+      setRegisteringProgramId(programId);
+      const result = await registerForProgram(programId);
+
+      // Optimistically mark as registered so the button disappears right away
+      setPrograms((prev) =>
+        prev.map((p) => (p.id === programId ? { ...p, isRegistered: true } : p))
+      );
+      alert("Successfully registered for program")
+    } catch (err) {
+      console.error("Register error:", err);
+      alert("Failed to register for program")
+    } finally {
+      setRegisteringProgramId(null);
+    }
   };
 
   const clearFilters = () => {
@@ -249,7 +280,12 @@ function ProgramsPage() {
 
             <div className="featured-programs__grid">
               {programs.map((program) => (
-                <article key={program.id} className="program-card">
+                <article
+                  key={program.id}
+                  className={`program-card program-card--${
+                    program.type?.toLowerCase() || "academy"
+                  }`}
+                >
                   <div className="program-card__image">
                     <span className="program-card__badge">{program.type}</span>
                   </div>
@@ -274,7 +310,6 @@ function ProgramsPage() {
                         : "Price on request"}
                     </p>
 
-                    {/* SINGLE ACTION ROW */}
                     <div className="program-card__actions">
                       {/* ALWAYS VISIBLE — WHITE BUTTON */}
                       <button
@@ -284,10 +319,23 @@ function ProgramsPage() {
                         View details
                       </button>
 
+                      {/* CLIENT REGISTER BUTTON (non-admin, logged in, not already registered) */}
+                      {user && !isAdmin && !program.isRegistered && (
+                        <button
+                          className="btn btn--primary btn--sm"
+                          style={{ marginLeft: "0.5rem" }}
+                          onClick={() => handleRegister(program.id)}
+                          disabled={registeringProgramId === program.id}
+                        >
+                          {registeringProgramId === program.id
+                            ? "Registering..."
+                            : "Register"}
+                        </button>
+                      )}
+
                       {/* ADMIN BUTTONS */}
                       {isAdmin && (
                         <>
-                          {/* OUTLINED UPDATE BUTTON */}
                           <button
                             className="btn btn--outline btn--sm"
                             style={{ marginLeft: "0.5rem" }}
@@ -298,7 +346,6 @@ function ProgramsPage() {
                             Update
                           </button>
 
-                          {/* OUTLINED RED DELETE BUTTON */}
                           <button
                             className="btn btn--outline btn--sm"
                             style={{

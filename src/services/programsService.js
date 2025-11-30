@@ -4,6 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 /**
  * Fetch programs with optional filters and pagination
+ * Each returned item may include `isRegistered: boolean` when an auth token is present.
  * @param {Object} params - Query parameters
  * @param {string} params.city - Filter by city
  * @param {string} params.ageGroup - Filter by age group code
@@ -34,7 +35,11 @@ export const getPrograms = async (params = {}) => {
   queryParams.append("sortBy", sortBy);
   queryParams.append("sortDir", sortDir);
 
-  const response = await fetch(`${API_URL}/programs/search?${queryParams}`);
+  const response = await fetch(`${API_URL}/programs/search?${queryParams}`, {
+    headers: {
+      ...getAuthHeaders(), // ✅ allow backend to compute isRegistered
+    },
+  });
   if (!response.ok) {
     throw new Error(`Failed to fetch programs: ${response.statusText}`);
   }
@@ -64,7 +69,11 @@ export const getProgramsByAcademy = async (academyId, options = {}) => {
     queryParams.toString() ? `?${queryParams.toString()}` : ""
   }`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      ...getAuthHeaders(), // ✅ include auth to get isRegistered in list
+    },
+  });
   if (!response.ok) {
     throw new Error(
       `Failed to fetch programs for academy: ${response.statusText}`
@@ -77,7 +86,12 @@ export const getProgramsByAcademy = async (academyId, options = {}) => {
 
 export async function getRecentPrograms(limit = 3, signal) {
   const url = `${API_URL}/programs/recent?limit=${limit}`;
-  const res = await fetch(url, { signal });
+  const res = await fetch(url, {
+    signal,
+    headers: {
+      ...getAuthHeaders(), // ✅ include auth so items can carry isRegistered
+    },
+  });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.message || `Failed to load programs (${res.status})`);
@@ -181,6 +195,35 @@ export const deleteProgram = async (programId) => {
 
   return true;
 };
+
+export const registerForProgram = async (programId) => {
+  if (!programId) {
+    throw new Error("programId is required");
+  }
+
+  const res = await fetch(`${API_URL}/programs/${programId}/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      // ignore
+    }
+    throw new Error(
+      data.message || `Failed to register for program (${res.status})`
+    );
+  }
+
+  return res.json(); // { success: true, ... }
+};
+
 /**
  * PUBLIC: get single program by id (for view details page)
  */

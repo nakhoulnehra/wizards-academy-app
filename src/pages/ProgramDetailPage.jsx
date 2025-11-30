@@ -80,7 +80,10 @@ function ProgramDetailPage() {
             )}
 
             {!loading && !error && program && (
-              <article className="program-card" style={{ marginTop: "1.5rem" }}>
+              <article 
+                className={`program-card program-card--${program.type?.toLowerCase() || 'academy'}`} 
+                style={{ marginTop: "1.5rem" }}
+              >
                 <div className="program-card__image">
                   <div className="program-card__badge">{program.type}</div>
                 </div>
