@@ -85,6 +85,9 @@ function FeaturedProgramsSection({ limit = 3 }) {
                 >
                   <div className="program-card__image">
                     <div className="program-card__badge">Featured</div>
+                    {program.isRegistered && (
+                      <span className="program-card__badge program-card__badge--registered">Registered</span>
+                    )}
                   </div>
 
                   <div className="program-card__body">

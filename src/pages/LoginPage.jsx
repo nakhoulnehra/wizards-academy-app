@@ -22,7 +22,7 @@ function LoginPage() {
     }
 
     // On success, go to academies page (admin or normal user)
-    navigate("/academy");
+    navigate("/");
   };
 
   return (

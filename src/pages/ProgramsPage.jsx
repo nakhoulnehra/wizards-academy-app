@@ -288,6 +288,9 @@ function ProgramsPage() {
                 >
                   <div className="program-card__image">
                     <span className="program-card__badge">{program.type}</span>
+                    {program.isRegistered && (
+                      <span className="program-card__badge program-card__badge--registered">Registered</span>
+                    )}
                   </div>
 
                   <div className="program-card__body">
