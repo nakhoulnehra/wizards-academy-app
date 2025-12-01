@@ -58,5 +58,24 @@ export async function replyToSupportRequest(id, reply) {
   if (!res.ok) {
     throw new Error(data.message || "Failed to send reply");
   }
-  return true;
+  // backend returns { success, message, data: updatedSupportRequest }
+  return data.data;
+}
+
+/**
+ * Client: list my own support requests + replies
+ */
+export async function getMySupportRequests() {
+  const res = await fetch(`${API_URL}/support/my`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to load your messages");
+  }
+  return data.data || [];
 }

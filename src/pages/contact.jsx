@@ -8,6 +8,7 @@ import {
   createSupportRequest,
   getSupportRequests,
   replyToSupportRequest,
+  getMySupportRequests,
 } from "../services/supportService";
 
 export default function ContactPage() {
@@ -29,6 +30,11 @@ export default function ContactPage() {
   const [selectedId, setSelectedId] = useState(null);
   const [reply, setReply] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
+
+  // Client "my messages" state
+  const [myRequests, setMyRequests] = useState([]);
+  const [loadingMy, setLoadingMy] = useState(false);
+  const [myError, setMyError] = useState("");
 
   // Toast state (global for the page)
   // { type: "success" | "error", message: string } or null
@@ -77,7 +83,28 @@ export default function ContactPage() {
     };
 
     load();
-  }, [isAdmin]);
+  }, [isAdmin, selectedId]);
+
+  // Load "my messages" for logged-in non-admin users
+  useEffect(() => {
+    if (!user || isAdmin) return;
+
+    const loadMy = async () => {
+      try {
+        setLoadingMy(true);
+        setMyError("");
+        const data = await getMySupportRequests();
+        setMyRequests(data);
+      } catch (err) {
+        console.error(err);
+        setMyError(err.message || "Failed to load your messages");
+      } finally {
+        setLoadingMy(false);
+      }
+    };
+
+    loadMy();
+  }, [user, isAdmin]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -100,6 +127,16 @@ export default function ContactPage() {
         email: user?.email || "",
         message: "",
       });
+
+      // refresh "my messages" if logged in
+      if (user) {
+        try {
+          const data = await getMySupportRequests();
+          setMyRequests(data);
+        } catch (err) {
+          console.error("Failed to refresh my messages", err);
+        }
+      }
 
       showToast(
         "success",
@@ -126,7 +163,7 @@ export default function ContactPage() {
       setSendingReply(true);
       await replyToSupportRequest(selectedRequest.id, reply.trim());
       setReply("");
-      showToast("success", "Reply recorded (no email sent).");
+      showToast("success", "Reply saved for this message.");
     } catch (err) {
       console.error(err);
       showToast(
@@ -187,7 +224,7 @@ export default function ContactPage() {
             // CLIENT / GUEST VIEW
             // ─────────────────────
             <div className="contact-content">
-              {/* Left: form */}
+              {/* Left: form + my messages (if logged in) */}
               <div className="contact-form-section">
                 <div className="form-card">
                   <h3>Send us a Message</h3>
@@ -241,6 +278,83 @@ export default function ContactPage() {
                     </button>
                   </form>
                 </div>
+
+                {/* Your messages + replies (only for logged-in users) */}
+                {user && (
+                  <div className="form-card" style={{ marginTop: "1.5rem" }}>
+                    <h3>Your Messages</h3>
+
+                    {loadingMy && <p>Loading your messages…</p>}
+                    {myError && <p style={{ color: "#ff7b7b" }}>{myError}</p>}
+
+                    {!loadingMy && !myError && myRequests.length === 0 && (
+                      <p>You haven’t sent us any messages yet.</p>
+                    )}
+
+                    {!loadingMy && myRequests.length > 0 && (
+                      <ul className="support-list">
+                        {myRequests.map((r) => (
+                          <li key={r.id} className="support-list-item">
+                            <div className="support-list-item-main">
+                              <span className="support-list-subject">
+                                {r.subject || "No subject"}
+                              </span>
+                              <span className="support-list-date">
+                                {new Date(r.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+
+                            <div
+                              className="support-list-message"
+                              style={{ marginTop: "0.5rem" }}
+                            >
+                              <strong>Your message:</strong>
+                              <div style={{ whiteSpace: "pre-wrap" }}>
+                                {r.message}
+                              </div>
+                            </div>
+
+                            {r.adminReply ? (
+                              <div
+                                className="support-list-reply"
+                                style={{ marginTop: "0.75rem" }}
+                              >
+                                <strong>Admin reply:</strong>
+                                <div style={{ whiteSpace: "pre-wrap" }}>
+                                  {r.adminReply}
+                                </div>
+                                {r.repliedAt && (
+                                  <div
+                                    style={{
+                                      marginTop: "0.35rem",
+                                      fontSize: "0.85rem",
+                                      opacity: 0.8,
+                                    }}
+                                  >
+                                    Replied:{" "}
+                                    {new Date(r.repliedAt).toLocaleString()}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div
+                                className="support-list-reply"
+                                style={{
+                                  marginTop: "0.75rem",
+                                  fontStyle: "italic",
+                                  opacity: 0.9,
+                                }}
+                              >
+                                We haven’t replied yet – we’ll get back to you
+                                soon.
+                              </div>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Right: info card (same as before) */}
@@ -381,7 +495,7 @@ export default function ContactPage() {
                             marginBottom: "0.5rem",
                           }}
                         >
-                          Reply (logged only, no email)
+                          Reply
                         </label>
                         <textarea
                           id="reply"
