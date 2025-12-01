@@ -104,18 +104,10 @@ function FeaturedProgramsSection({ limit = 3 }) {
                       <button
                         className="btn btn--primary btn--sm"
                         onClick={() =>
-                          navigate(`/programs/${program.slug || program.id}`)
+                          navigate(`/programs/${program.id}`)
                         }
                       >
                         View details
-                      </button>
-                      <button
-                        className="btn btn--ghost btn--sm"
-                        onClick={() =>
-                          navigate(`/apply?programId=${program.id}`)
-                        }
-                      >
-                        Apply now
                       </button>
                     </div>
                   </div>
