@@ -15,9 +15,9 @@ function Footer() {
 
         <div className="footer__col footer__col--links">
           <h4>Quick links</h4>
+          <a href="/">Home</a>
           <Link to="/programs">Programs</Link>
-          <a href="#teams">Teams</a>
-          <a href="#tournaments">Tournaments</a>
+          <Link to="/academy">Academies</Link>
           <Link to="/about">About</Link>
         </div>
 

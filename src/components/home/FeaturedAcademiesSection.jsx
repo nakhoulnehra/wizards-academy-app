@@ -58,9 +58,12 @@ function FeaturedAcademiesSection() {
             const isActive = academy.isActive !== false;
 
             return (
-              <article key={academy.id} className="program-card">
+              <article 
+                key={academy.id} 
+                className="program-card program-card--academy-entity"
+              >
                 <div className="program-card__image">
-                  <div className="program-card__badge">
+                  <div className={`program-card__badge ${isActive ? 'badge--active' : 'badge--inactive'}`}>
                     {isActive ? "Active" : "Inactive"}
                   </div>
                 </div>

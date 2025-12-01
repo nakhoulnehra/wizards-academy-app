@@ -79,9 +79,15 @@ function FeaturedProgramsSection({ limit = 3 }) {
               </p>
             ) : (
               programs.map((program) => (
-                <article key={program.id} className="program-card">
+                <article 
+                  key={program.id} 
+                  className={`program-card program-card--${program.type?.toLowerCase() || 'academy'}`}
+                >
                   <div className="program-card__image">
                     <div className="program-card__badge">Featured</div>
+                    {program.isRegistered && (
+                      <span className="program-card__badge program-card__badge--registered">Registered</span>
+                    )}
                   </div>
 
                   <div className="program-card__body">
@@ -98,18 +104,10 @@ function FeaturedProgramsSection({ limit = 3 }) {
                       <button
                         className="btn btn--primary btn--sm"
                         onClick={() =>
-                          navigate(`/programs/${program.slug || program.id}`)
+                          navigate(`/programs/${program.id}`)
                         }
                       >
                         View details
-                      </button>
-                      <button
-                        className="btn btn--ghost btn--sm"
-                        onClick={() =>
-                          navigate(`/apply?programId=${program.id}`)
-                        }
-                      >
-                        Apply now
                       </button>
                     </div>
                   </div>

@@ -4,6 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 /**
  * Fetch programs with optional filters and pagination
+ * Each returned item may include `isRegistered: boolean` when an auth token is present.
  * @param {Object} params - Query parameters
  * @param {string} params.city - Filter by city
  * @param {string} params.ageGroup - Filter by age group code
@@ -25,75 +26,147 @@ export const getPrograms = async (params = {}) => {
     sortDir = "desc",
   } = params;
 
-  const queryParams = new URLSearchParams();
-  if (city) queryParams.append("city", city);
-  if (ageGroup) queryParams.append("ageGroup", ageGroup);
-  if (type) queryParams.append("type", type);
-  queryParams.append("page", page.toString());
-  queryParams.append("pageSize", pageSize.toString());
-  queryParams.append("sortBy", sortBy);
-  queryParams.append("sortDir", sortDir);
+  const searchParams = new URLSearchParams();
 
-  const response = await fetch(`${API_URL}/programs/search?${queryParams}`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch programs: ${response.statusText}`);
+  if (city) searchParams.set("city", city);
+  if (ageGroup) searchParams.set("ageGroup", ageGroup);
+  if (type) searchParams.set("type", type);
+
+  searchParams.set("page", String(page));
+  searchParams.set("pageSize", String(pageSize));
+  searchParams.set("sortBy", sortBy);
+  searchParams.set("sortDir", sortDir);
+
+  const res = await fetch(`${API_URL}/programs/search?${searchParams.toString()}`, {
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      // ignore json parse error
+    }
+    throw new Error(data.message || `Failed to load programs (${res.status})`);
   }
-  return response.json();
+
+  return res.json();
 };
 
 /**
- * Fetch available filter options
+ * Fetch filters (locations, ageGroups, types)
  */
 export const getProgramFilters = async () => {
-  const response = await fetch(`${API_URL}/programs/filters`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch filters: ${response.statusText}`);
+  const res = await fetch(`${API_URL}/programs/filters`);
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      // ignore json parse error
+    }
+    throw new Error(data.message || `Failed to load filters (${res.status})`);
   }
-  return response.json();
+
+  return res.json();
 };
 
-export const getProgramsByAcademy = async (academyId, options = {}) => {
-  if (!academyId) {
-    throw new Error("academyId is required");
+/**
+ * Fetch recent programs for landing page hero
+ */
+export const getRecentPrograms = async (limit = 3) => {
+  const params = new URLSearchParams();
+  params.set("limit", String(limit));
+
+  const res = await fetch(`${API_URL}/programs/recent?${params.toString()}`, {
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      // ignore json parse error
+    }
+    throw new Error(data.message || `Failed to load recent programs (${res.status})`);
   }
 
-  const queryParams = new URLSearchParams();
-  if (options.type) queryParams.append("type", options.type);
+  const data = await res.json();
+  return data.programs || [];
+};
 
-  const url = `${API_URL}/programs/by-academy/${academyId}${
-    queryParams.toString() ? `?${queryParams.toString()}` : ""
-  }`;
+/**
+ * Fetch programs for a specific academy
+ */
+export const getProgramsByAcademy = async (academyId, type) => {
+  const params = new URLSearchParams();
+  if (type) params.set("type", type);
 
-  const response = await fetch(url);
-  if (!response.ok) {
+  const res = await fetch(
+    `${API_URL}/programs/by-academy/${academyId}?${params.toString()}`,
+    {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    }
+  );
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      // ignore
+    }
     throw new Error(
-      `Failed to fetch programs for academy: ${response.statusText}`
+      data.message || `Failed to load academy programs (${res.status})`
     );
   }
-  // backend returns { success: true, data: [...] }
-  const data = await response.json();
+
+  const data = await res.json();
   return data.data || [];
 };
 
-export async function getRecentPrograms(limit = 3, signal) {
-  const url = `${API_URL}/programs/recent?limit=${limit}`;
-  const res = await fetch(url, { signal });
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.message || `Failed to load programs (${res.status})`);
-  }
-  const data = await res.json();
-  return data.programs || [];
-}
+/**
+ * ADMIN: create a new program for an academy
+ */
+export const createProgram = async (academyId, payload) => {
+  const {
+    title,
+    description,
+    startDate,
+    endDate,
+    ageGroupCode,
+    type,
+    price,
+    currency,
+  } = payload;
 
-export const createProgram = async (academyId, type, data) => {
+  const body = {
+    title,
+    description,
+    startDate: startDate || null,
+    endDate: endDate || null,
+    ageGroupCode,
+    type,
+    price: price != null && price !== "" ? Number(price) : null,
+    currency: currency || null,
+  };
+
   const res = await fetch(`${API_URL}/programs/admin/programs/${academyId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...getAuthHeaders(), // ✅ Authorization header
+      ...getAuthHeaders(),
     },
-    body: JSON.stringify({ ...data, type }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -109,6 +182,64 @@ export const createProgram = async (academyId, type, data) => {
   }
 
   return res.json();
+};
+
+/**
+ * Get all programs the current user is enrolled in
+ */
+export const getMyEnrolledPrograms = async (signal) => {
+  const res = await fetch(`${API_URL}/programs/me/enrolled`, {
+    method: "GET",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json",
+    },
+    signal, // optional AbortController.signal
+  });
+
+  if (!res.ok) {
+    let message = "Failed to load enrolled programs";
+    try {
+      const body = await res.json();
+      if (body?.message) message = body.message;
+    } catch (_) {
+      // ignore JSON parse errors, keep default message
+    }
+    throw new Error(message);
+  }
+
+  const body = await res.json();
+  return body.data || [];
+};
+
+export const getMyDueFees = async (signal) => {
+  const res = await fetch(`${API_URL}/programs/me/fees`, {
+    method: "GET",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json",
+    },
+    signal, // optional AbortController.signal
+  });
+
+  if (!res.ok) {
+    let message = "Failed to load due fees";
+    try {
+      const body = await res.json();
+      if (body?.message) message = body.message;
+    } catch (_) {
+      // ignore JSON parse errors, keep default message
+    }
+    throw new Error(message);
+  }
+
+  const body = await res.json();
+  return {
+    items: Array.isArray(body.items) ? body.items : [],
+    totalsByCurrency: Array.isArray(body.totalsByCurrency)
+      ? body.totalsByCurrency
+      : [],
+  };
 };
 
 /**
@@ -135,14 +266,36 @@ export const getProgramById = async (programId) => {
 /**
  * ADMIN: update existing program
  */
-export const updateProgram = async (programId, data) => {
+export const updateProgram = async (programId, payload) => {
+  const {
+    title,
+    description,
+    startDate,
+    endDate,
+    ageGroupCode,
+    type,
+    price,
+    currency,
+  } = payload;
+
+  const body = {
+    title,
+    description,
+    startDate: startDate || null,
+    endDate: endDate || null,
+    ageGroupCode,
+    type,
+    price: price != null && price !== "" ? Number(price) : null,
+    currency: currency || null,
+  };
+
   const res = await fetch(`${API_URL}/programs/admin/programs/${programId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -157,12 +310,11 @@ export const updateProgram = async (programId, data) => {
     );
   }
 
-  const body = await res.json();
-  return body.program;
+  return res.json();
 };
 
 /**
- * ADMIN: delete program
+ * ADMIN: delete a program
  */
 export const deleteProgram = async (programId) => {
   const res = await fetch(`${API_URL}/programs/admin/programs/${programId}`, {
@@ -173,14 +325,45 @@ export const deleteProgram = async (programId) => {
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      // ignore
+    }
+    throw new Error(data.message || `Failed to delete program (${res.status})`);
+  }
+
+  return res.json();
+};
+
+/**
+ * Register current user for a program
+ */
+export const registerForProgram = async (programId) => {
+  const res = await fetch(`${API_URL}/programs/${programId}/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      // ignore
+    }
     throw new Error(
-      `Failed to delete program (${res.status}) ${text || ""}`.trim()
+      data.message || `Failed to register for program (${res.status})`
     );
   }
 
-  return true;
+  return res.json(); // { success: true, ... }
 };
+
 /**
  * PUBLIC: get single program by id (for view details page)
  */

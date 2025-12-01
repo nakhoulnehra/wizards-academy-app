@@ -35,13 +35,19 @@ function Navbar() {
 
         {/* CENTER NAV LINKS */}
         <nav className="navbar__nav">
+          <Link to="/">Home</Link>
           <Link to="/programs" className="nav__link">Programs</Link>
           <Link to="/academy">Academies</Link>
-          <a href="#tournaments">Tournaments</a>
           <Link to="/about">About</Link>
 
           {/* ✅ UPDATED CONTACT LINK */}
-          <Link to="/contact">Contact</Link>
+          {!user ? (
+            <Link to="/contact">Contact</Link>
+            ) : user.role === "CLIENT" ? (
+              <Link to="/contact">Contact Us</Link>
+            ) : (
+              <Link to="/contact">Inbox</Link>
+            )}
         </nav>
 
         {/* RIGHT SIDE AUTH BUTTONS */}
@@ -57,9 +63,15 @@ function Navbar() {
             </>
           ) : (
             <>
-              <span style={{ marginRight: "1rem" }}>
-                Hello, {user.firstName || "User"}
-              </span>
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                style={{ marginRight: "0.75rem" }}
+                onClick={() => navigate("/profile")}
+              >
+                View profile
+              </button>
+
               <button
                 type="button"
                 className="btn btn--ghost btn--sm"

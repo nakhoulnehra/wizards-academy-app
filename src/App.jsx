@@ -15,6 +15,7 @@ import AdminProgramEditPage from "./pages/AdminProgramEditPage";
 import ProgramsPage from "./pages/ProgramsPage";
 import ProgramDetailPage from "./pages/ProgramDetailPage";
 import ContactPage from "./pages/contact";
+import ProfilePage from "./pages/ProfilePage";
 
 // STORE
 import useAuthStore from "./store/authStore";
@@ -44,6 +45,7 @@ function App() {
         <Route path="/programs" element={<ProgramsPage />} />
         <Route path="/programs/:programId" element={<ProgramDetailPage />} />
         <Route path="/academy/:id" element={<AcademyDetailPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         {/* ADMIN ROUTES */}
         <Route path="/admin/academies/new" element={<AdminAcademyCreatePage />} />
