@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import useAuthStore from "../store/authStore";
-import { getMyEnrolledPrograms } from "../services/programsService";
+import { getMyEnrolledPrograms, getMyDueFees } from "../services/programsService";
 import { getMyProfile, updateMyProfile } from "../services/meService";
 
 function ProfilePage() {
@@ -19,6 +19,11 @@ function ProfilePage() {
   const [programs, setPrograms] = useState([]);
   const [loadingPrograms, setLoadingPrograms] = useState(true);
   const [programsError, setProgramsError] = useState("");
+
+  const [feesItems, setFeesItems] = useState([]);
+  const [feesTotals, setFeesTotals] = useState([]);
+  const [loadingFees, setLoadingFees] = useState(true);
+  const [feesError, setFeesError] = useState("");
 
   const isClient = (me || user)?.role === "CLIENT";
   const isAdmin = (me || user)?.role === "ADMIN";
@@ -80,6 +85,38 @@ function ProfilePage() {
         setProgramsError(err.message || "Failed to load enrolled programs");
       } finally {
         setLoadingPrograms(false);
+      }
+    })();
+
+    return () => controller.abort();
+  }, [user]);
+
+  // Load due fees (CLIENT only)
+  useEffect(() => {
+    if (!user || user.role !== "CLIENT") {
+      setFeesItems([]);
+      setFeesTotals([]);
+      setLoadingFees(false);
+      setFeesError("");
+      return;
+    }
+
+    const controller = new AbortController();
+
+    (async () => {
+      try {
+        setLoadingFees(true);
+        const { items, totalsByCurrency } = await getMyDueFees(
+          controller.signal
+        );
+        setFeesItems(items || []);
+        setFeesTotals(totalsByCurrency || []);
+        setFeesError("");
+      } catch (err) {
+        console.error("load due fees error:", err);
+        setFeesError(err.message || "Failed to load due fees");
+      } finally {
+        setLoadingFees(false);
       }
     })();
 
@@ -405,8 +442,10 @@ function ProfilePage() {
                 }}
               >
                 Manage your personal information
-                {isClient && " and see your enrolled programs and outstanding fees."}
-                {isAdmin && " as an administrator of Wizards Football Academy."}
+                {isClient &&
+                  " and see your enrolled programs and outstanding fees."}
+                {isAdmin &&
+                  " as an administrator of Wizards Football Academy."}
               </p>
             </div>
           </div>
@@ -422,8 +461,8 @@ function ProfilePage() {
                   <p className="section-header__eyebrow">Your training</p>
                   <h2 className="section-header__title">Enrolled programs</h2>
                   <p className="section-header__subtitle">
-                    All academy programs and clinics you are currently registered
-                    in.
+                    All academy programs and clinics you are currently
+                    registered in.
                   </p>
                 </header>
 
@@ -495,22 +534,154 @@ function ProfilePage() {
               </div>
             </section>
 
-            {/* SECTION 2: DUE FEES (placeholder for now) */}
+            {/* SECTION 2: DUE FEES */}
             <section className="section">
               <div className="container">
                 <header className="section-header">
                   <p className="section-header__eyebrow">Payments</p>
                   <h2 className="section-header__title">Due fees</h2>
                   <p className="section-header__subtitle">
-                    Any outstanding payments for your active programs will appear
-                    here.
+                    A breakdown of fees for the programs you&apos;re enrolled
+                    in.
                   </p>
                 </header>
 
-                <p style={{ padding: "1rem 0" }}>
-                  (We&apos;ll wire this up next – currently no due fees data is
-                  loaded.)
-                </p>
+                {loadingFees && (
+                  <p style={{ padding: "1rem 0" }}>Loading your fees…</p>
+                )}
+
+                {feesError && !loadingFees && (
+                  <p style={{ padding: "1rem 0", color: "#f87171" }}>
+                    {feesError}
+                  </p>
+                )}
+
+                {!loadingFees && !feesError && (
+                  <>
+                    {feesItems.length === 0 ? (
+                      <p style={{ padding: "1rem 0" }}>
+                        You don&apos;t have any fee information for your
+                        programs yet.
+                      </p>
+                    ) : (
+                      <div
+                        style={{
+                          marginTop: "0.5rem",
+                          borderRadius: "16px",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          background: "rgba(15,23,42,0.7)",
+                          padding: "1.25rem 1.5rem",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: "0.75rem",
+                            opacity: 0.7,
+                            fontSize: "0.8rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.08em",
+                          }}
+                        >
+                          <span>Program</span>
+                          <span>Fee</span>
+                        </div>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.75rem",
+                          }}
+                        >
+                          {feesItems.map((item) => (
+                            <div
+                              key={item.registrationId}
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: "1rem",
+                              }}
+                            >
+                              <div>
+                                <div
+                                  style={{
+                                    fontSize: "0.95rem",
+                                    fontWeight: 600,
+                                    marginBottom: "0.1rem",
+                                  }}
+                                >
+                                  {item.title}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: "0.8rem",
+                                    opacity: 0.7,
+                                  }}
+                                >
+                                  {item.type && <span>{item.type}</span>}
+                                  {item.season && (
+                                    <span style={{ marginLeft: 6 }}>
+                                      • {item.season}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div
+                                style={{
+                                  fontSize: "0.95rem",
+                                  fontWeight: 600,
+                                  whiteSpace: "nowrap",
+                                }}
+                              >
+                                {item.price} {item.currency}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div
+                          style={{
+                            marginTop: "1rem",
+                            paddingTop: "0.75rem",
+                            borderTop: "1px dashed rgba(148,163,184,0.4)",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: "1rem",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "0.9rem",
+                              opacity: 0.8,
+                            }}
+                          >
+                            Total
+                          </span>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              textAlign: "right",
+                              fontSize: "0.95rem",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {feesTotals.map((t) => (
+                              <span key={t.currency}>
+                                {t.total} {t.currency}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </section>
           </>
