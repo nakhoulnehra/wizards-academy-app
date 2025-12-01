@@ -84,6 +84,7 @@ export const getProgramsByAcademy = async (academyId, options = {}) => {
   return data.data || [];
 };
 
+
 export async function getRecentPrograms(limit = 3, signal) {
   const url = `${API_URL}/programs/recent?limit=${limit}`;
   const res = await fetch(url, {
@@ -123,6 +124,31 @@ export const createProgram = async (academyId, type, data) => {
   }
 
   return res.json();
+};
+
+export const getMyEnrolledPrograms = async (signal) => {
+  const res = await fetch(`${API_URL}/programs/me/enrolled`, {
+    method: "GET",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json",
+    },
+    signal, // optional AbortController.signal
+  });
+
+  if (!res.ok) {
+    let message = "Failed to load enrolled programs";
+    try {
+      const body = await res.json();
+      if (body?.message) message = body.message;
+    } catch (_) {
+      // ignore JSON parse errors, keep default message
+    }
+    throw new Error(message);
+  }
+
+  const body = await res.json();
+  return body.data || [];
 };
 
 /**

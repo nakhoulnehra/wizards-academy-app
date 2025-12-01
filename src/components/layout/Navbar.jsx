@@ -63,9 +63,15 @@ function Navbar() {
             </>
           ) : (
             <>
-              <span style={{ marginRight: "1rem" }}>
-                Hello, {user.firstName || "User"}
-              </span>
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                style={{ marginRight: "0.75rem" }}
+                onClick={() => navigate("/profile")}
+              >
+                View profile
+              </button>
+
               <button
                 type="button"
                 className="btn btn--ghost btn--sm"
