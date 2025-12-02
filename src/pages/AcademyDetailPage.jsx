@@ -38,8 +38,8 @@ function AcademyDetailPage() {
         setAcademy(academyData);
 
         const [academyDataPrograms, clinicDataPrograms] = await Promise.all([
-          getProgramsByAcademy(id, { type: "Academy" }),
-          getProgramsByAcademy(id, { type: "Clinic" }),
+          getProgramsByAcademy(id, "ACADEMY"),
+          getProgramsByAcademy(id, "CLINIC"),
         ]);
 
         setAcademyPrograms(academyDataPrograms);
@@ -110,7 +110,11 @@ function AcademyDetailPage() {
                   style={{ marginBottom: "3rem" }}
                 >
                   <div className="program-card__image">
-                    <div className={`program-card__badge ${academy.isActive ? 'badge--active' : 'badge--inactive'}`}>
+                    <div
+                      className={`program-card__badge ${
+                        academy.isActive ? "badge--active" : "badge--inactive"
+                      }`}
+                    >
                       {academy.isActive ? "Active" : "Inactive"}
                     </div>
                   </div>
@@ -187,9 +191,11 @@ function AcademyDetailPage() {
 
                 <div className="featured-programs__grid">
                   {academyPrograms.map((program) => (
-                    <article 
-                      key={program.id} 
-                      className={`program-card program-card--${program.type?.toLowerCase() || 'academy'}`}
+                    <article
+                      key={program.id}
+                      className={`program-card program-card--${
+                        program.type?.toLowerCase() || "academy"
+                      }`}
                     >
                       <div className="program-card__image">
                         <div className="program-card__badge">
@@ -260,9 +266,11 @@ function AcademyDetailPage() {
 
                 <div className="featured-programs__grid">
                   {clinicPrograms.map((program) => (
-                    <article 
-                      key={program.id} 
-                      className={`program-card program-card--${program.type?.toLowerCase() || 'clinic'}`}
+                    <article
+                      key={program.id}
+                      className={`program-card program-card--${
+                        program.type?.toLowerCase() || "clinic"
+                      }`}
                     >
                       <div className="program-card__image">
                         <div className="program-card__badge">
