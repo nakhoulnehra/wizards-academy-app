@@ -51,10 +51,7 @@ function AdminProgramCreatePage() {
   const handleChange = (field, value) => {
     setForm((prev) => ({
       ...prev,
-      [field]:
-        field === "currency"
-          ? value.toUpperCase().slice(0, 3)
-          : value,
+      [field]: field === "currency" ? value.toUpperCase().slice(0, 3) : value,
     }));
   };
 
@@ -63,7 +60,8 @@ function AdminProgramCreatePage() {
     setSubmitting(true);
 
     try {
-      await createProgram(academyId, type, form);
+      await createProgram(academyId, { ...form, type });
+
       navigate(`/academy/${academyId}`);
     } catch (err) {
       console.error(err);
@@ -92,7 +90,6 @@ function AdminProgramCreatePage() {
             </header>
 
             <form className="auth-form" onSubmit={handleSubmit}>
-
               {/* Program title */}
               <div className="auth-form__field">
                 <label htmlFor="program-title">Program title *</label>
