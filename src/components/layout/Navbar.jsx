@@ -48,6 +48,14 @@ function Navbar() {
             ) : (
               <Link to="/contact">Inbox</Link>
             )}
+            <a 
+              href="https://foothub-lb.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="nav__link"
+            >
+              FootHub
+            </a>
         </nav>
 
         {/* RIGHT SIDE AUTH BUTTONS */}
