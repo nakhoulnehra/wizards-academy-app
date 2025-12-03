@@ -364,6 +364,54 @@ export const registerForProgram = async (programId) => {
   return res.json(); // { success: true, ... }
 };
 
+// ADMIN: list registrations (players) for a program
+export const getProgramRegistrations = async (programId) => {
+  const res = await fetch(
+    `${API_URL}/programs/admin/programs/${programId}/registrations`,
+    {
+      method: "GET",
+      headers: {
+        ...getAuthHeaders(),
+      },
+    }
+  );
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (_) {
+      // ignore
+    }
+    throw new Error(
+      data.message || `Failed to load registrations (${res.status})`
+    );
+  }
+
+  // { success, programId, title, capacity, enrolledCount, remaining, players: [...] }
+  return res.json();
+};
+
+// ADMIN: remove a player's registration from a program
+export const removeProgramRegistration = async (programId, registrationId) => {
+  const res = await fetch(
+    `${API_URL}/programs/admin/programs/${programId}/registrations/${registrationId}`,
+    {
+      method: "DELETE",
+      headers: {
+        ...getAuthHeaders(),
+      },
+    }
+  );
+  if (!res.ok) {
+    let data = {};
+    try { data = await res.json(); } catch (_) {}
+    throw new Error(data.message || `Failed to remove player (${res.status})`);
+  }
+  return res.json(); // { success, deletedRegistrationId, programId, ... }
+};
+
+
 /**
  * PUBLIC: get single program by id (for view details page)
  */
