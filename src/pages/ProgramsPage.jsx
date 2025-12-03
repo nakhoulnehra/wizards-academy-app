@@ -6,6 +6,8 @@ import {
   getProgramFilters,
   deleteProgram,
   registerForProgram,
+  getProgramRegistrations,
+  removeProgramRegistration,
 } from "../services/programsService";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -46,6 +48,19 @@ function ProgramsPage() {
     title: "",
   });
   const [deleting, setDeleting] = useState(false);
+
+      // Players modal state
+    const [playersModal, setPlayersModal] = useState({
+      open: false,
+      loading: false,
+      programId: null,
+      title: "",
+      capacity: null,
+      enrolledCount: 0,
+      remaining: null,
+      players: [], // [{ registrationId, userId, fullName, email, phone, registeredAt }]
+    });
+    const [removingRegId, setRemovingRegId] = useState(null);
 
   // Load filters
   useEffect(() => {
@@ -127,6 +142,44 @@ function ProgramsPage() {
     }
   };
 
+  const handleRemovePlayer = async (registrationId) => {
+    if (!playersModal.programId || !registrationId) return;
+
+    // Optional confirmation
+    const ok = window.confirm("Remove this player from the program?");
+    if (!ok) return;
+
+    try {
+      setRemovingRegId(registrationId);
+      await removeProgramRegistration(playersModal.programId, registrationId);
+
+      // Optimistically update the modal content
+      setPlayersModal((prev) => {
+        const nextPlayers = prev.players.filter(
+          (p) => p.registrationId !== registrationId
+        );
+        const nextEnrolled = Math.max(0, (prev.enrolledCount || 0) - 1);
+        const nextRemaining =
+          prev.capacity != null
+            ? Math.max(0, prev.capacity - nextEnrolled)
+            : prev.remaining;
+
+        return {
+          ...prev,
+          players: nextPlayers,
+          enrolledCount: nextEnrolled,
+          remaining: nextRemaining,
+        };
+      });
+    } catch (err) {
+      console.error("Remove player error:", err);
+      alert(err.message || "Failed to remove player");
+    } finally {
+      setRemovingRegId(null);
+    }
+  };
+
+
   const clearFilters = () => {
     setSelected({ city: "", ageGroup: "", type: "" });
     setPage(1);
@@ -166,6 +219,51 @@ function ProgramsPage() {
       setDeleting(false);
       setConfirmDelete({ open: false, programId: null, title: "" });
     }
+  };
+
+    const openPlayersModal = async (program) => {
+    setPlayersModal((prev) => ({
+      ...prev,
+      open: true,
+      loading: true,
+      programId: program.id,
+      title: program.title,
+      capacity: null,
+      enrolledCount: 0,
+      remaining: null,
+      players: [],
+    }));
+
+    try {
+      const data = await getProgramRegistrations(program.id);
+      setPlayersModal((prev) => ({
+        ...prev,
+        loading: false,
+        title: data.title || program.title,
+        capacity: data.capacity ?? null,
+        enrolledCount:
+          data.enrolledCount ?? (Array.isArray(data.players) ? data.players.length : 0),
+        remaining: data.remaining ?? null,
+        players: Array.isArray(data.players) ? data.players : [],
+      }));
+    } catch (err) {
+      console.error("Load registrations error:", err);
+      setPlayersModal((prev) => ({ ...prev, loading: false }));
+      alert(err.message || "Failed to load players");
+    }
+  };
+
+  const closePlayersModal = () => {
+    setPlayersModal({
+      open: false,
+      loading: false,
+      programId: null,
+      title: "",
+      capacity: null,
+      enrolledCount: 0,
+      remaining: null,
+      players: [],
+    });
   };
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -339,6 +437,13 @@ function ProgramsPage() {
                       {/* ADMIN BUTTONS */}
                       {isAdmin && (
                         <>
+                        <button
+                            className="btn btn--outline btn--sm"
+                            style={{ marginLeft: "0.5rem" }}
+                            onClick={() => openPlayersModal(program)}
+                          >
+                            Players
+                          </button>
                           <button
                             className="btn btn--outline btn--sm"
                             style={{ marginLeft: "0.5rem" }}
@@ -373,6 +478,122 @@ function ProgramsPage() {
           </div>
         </section>
       </main>
+
+            {playersModal.open && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 60, // above delete modal
+          }}
+          onClick={closePlayersModal}
+        >
+          <div
+            className="auth-form"
+            style={{
+              maxWidth: "640px",
+              width: "100%",
+              padding: "1.75rem 2rem",
+              borderRadius: "24px",
+              background:
+                "radial-gradient(circle at top left, rgba(164,120,255,0.25), transparent 55%), rgba(6,10,33,0.95)",
+              boxShadow: "0 18px 60px rgba(0, 0, 0, 0.7)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3
+              className="section-header__title"
+              style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}
+            >
+              Enrolled players — {playersModal.title}
+            </h3>
+
+            <p style={{ marginBottom: "0.75rem", opacity: 0.9 }}>
+              {playersModal.loading
+                ? "Loading…"
+                : `Enrolled: ${playersModal.enrolledCount}${
+                    playersModal.capacity != null
+                      ? ` / ${playersModal.capacity} (Remaining: ${Math.max(
+                          0,
+                          playersModal.remaining ?? 0
+                        )})`
+                      : ""
+                  }`}
+            </p>
+
+            <div
+              style={{
+                maxHeight: "360px",
+                overflowY: "auto",
+                border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: "16px",
+              }}
+            >
+              {playersModal.loading ? (
+                <div style={{ padding: "1rem" }}>Please wait…</div>
+              ) : playersModal.players.length === 0 ? (
+                <div style={{ padding: "1rem", opacity: 0.9 }}>
+                  No players enrolled yet.
+                </div>
+              ) : (
+                <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                  {playersModal.players.map((p) => (
+                    <li
+                      key={p.registrationId}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        padding: "0.75rem 1rem",
+                        borderBottom: "1px solid rgba(255,255,255,0.06)",
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600 }}>
+                          {p.fullName || "(No name)"}{" "}
+                          <span style={{ opacity: 0.75, fontWeight: 400 }}>
+                            {p.email ? `• ${p.email}` : ""}
+                            {p.phone ? ` • ${p.phone}` : ""}
+                          </span>
+                        </div>
+                        {p.registeredAt && (
+                          <div style={{ fontSize: "0.85rem", opacity: 0.75 }}>
+                            Registered at {new Date(p.registeredAt).toLocaleString()}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Trailing X (not wired yet) */}
+                        <button
+                          className="btn btn--ghost btn--sm"
+                          title="Remove player"
+                          onClick={() => handleRemovePlayer(p.registrationId)}
+                          disabled={removingRegId === p.registrationId}
+                          style={{ opacity: removingRegId === p.registrationId ? 0.6 : 1 }}
+                        >
+                          {removingRegId === p.registrationId ? "…" : "✕"}
+                        </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+              <button className="btn btn--ghost btn--sm" onClick={closePlayersModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* ✨ DELETE CONFIRM MODAL */}
       {confirmDelete.open && (
